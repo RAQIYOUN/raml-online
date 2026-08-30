@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نیت‌رمل | رمل انداختن آنلاین بر اساس دایره ابجد - محمود خاوری</title>
+
+<meta name="description" content="نیت‌رمل: صفحه‌ی آنلاین انداختن رمل بر اساس نیت شما، با محاسبه‌ی امّهات و بنات و اخوات و شواهد و قاضی، و تفسیر هر خانه دقیقاً بر پایه‌ی دایره‌ی کامل ابجد. تدوین: محمود خاوری - گروه آموزشی راقیون.">
+<meta name="robots" content="index, follow">
+<meta name="author" content="محمود خاوری - گروه آموزشی راقیون">
+
+<link href="https://fonts.googleapis.com/css2?family=Vazir&display=swap" rel="stylesheet">
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<style>
+    :root{
+        --brand:#3498db;
+        --brand-dark:#2c7bb0;
+        --col-gap:6px;
+        --row-gap:10px;
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+        font-family:'Vazir', sans-serif;
+        background-color:#f4f4f9;
+        color:#333;
+        margin:0;
+        padding:0;
+        display:flex;
+        flex-direction:column;
+        min-height:100vh;
+        opacity:0;
+        transition:opacity .6s;
+    }
+
+    header{
+        background-color:var(--brand);
+        color:white;
+        padding:14px 16px;
+        position:fixed;
+        width:100%;
+        top:0;
+        z-index:1000;
+        text-align:center;
+        box-shadow:0 2px 10px #0002;
+    }
+    header h1{ margin:0; font-size:16px; }
+    header p{ margin:2px 0 0; font-size:11.5px; opacity:.9; }
+
+    main{
+        flex:1;
+        padding:96px 12px 30px;
+        max-width:900px;
+        margin:0 auto;
+        width:100%;
+    }
+
+    /* ---------- پنل نیت ---------- */
+    .niyat-panel{
+        background:#fff;
+        border-radius:14px;
+        box-shadow:0 2px 10px #0002;
+        padding:18px 16px;
+        margin-bottom:20px;
+    }
+    .niyat-panel label{
+        display:block;
+        font-size:13px;
+        font-weight:bold;
+        color:var(--brand-dark);
+        margin-bottom:8px;
+    }
+    .niyat-panel textarea{
+        width:100%;
+        min-height:70px;
+        border:1px solid #d3e9f7;
+        border-radius:10px;
+        padding:10px 12px;
+        font-family:inherit;
+        font-size:14px;
+        resize:vertical;
+        background:#f9fbfd;
+    }
+    .niyat-panel textarea:focus{ outline:2px solid var(--brand); }
+
+    .mode-row{
+        display:flex;
+        gap:8px;
+        flex-wrap:wrap;
+        margin-bottom:14px;
+    }
+    .mode-btn{
+        flex:1;
+        min-width:150px;
+        background:#f4f4f9;
+        color:#556270;
+        border:1px solid #e3e3e8;
+        border-radius:10px;
+        padding:10px 12px;
+        font-family:inherit;
+        font-size:13px;
+        font-weight:bold;
+        cursor:pointer;
+        transition:background .15s, color .15s, border-color .15s;
+    }
+    .mode-btn.active{
+        background:var(--brand);
+        color:#fff;
+        border-color:var(--brand);
+    }
+
+    .mothers-grid{
+        display:grid;
+        grid-template-columns:repeat(2, 1fr);
+        gap:10px;
+        margin-top:8px;
+    }
+    .mother-field{ display:flex; flex-direction:column; gap:4px; }
+    .mother-field label{
+        margin:0;
+        font-size:12px;
+        font-weight:bold;
+        color:#8a97a6;
+    }
+    .mother-field select{
+        border:1px solid #d3e9f7;
+        border-radius:10px;
+        padding:9px 10px;
+        font-family:inherit;
+        font-size:13.5px;
+        background:#f9fbfd;
+        color:#333;
+    }
+    .mother-field select:focus{ outline:2px solid var(--brand); }
+
+    @media (max-width:500px){
+        .mothers-grid{ grid-template-columns:1fr; }
+    }
+
+    .cast-row{
+        display:flex;
+        gap:10px;
+        margin-top:12px;
+        flex-wrap:wrap;
+        align-items:center;
+    }
+
+    .cast-btn{
+        background:var(--brand);
+        color:#fff;
+        border:none;
+        border-radius:10px;
+        padding:12px 26px;
+        font-family:inherit;
+        font-size:14.5px;
+        font-weight:bold;
+        cursor:pointer;
+        transition:transform .12s, box-shadow .12s;
+        box-shadow:0 3px 10px #3498db55;
+    }
+    .cast-btn:hover{ transform:translateY(-2px); }
+    .cast-btn:active{ transform:translateY(0); }
+    .cast-btn:disabled{ opacity:.6; cursor:progress; }
+
+    .status-badge{
+        font-size:12px;
+        padding:5px 12px;
+        border-radius:20px;
+        background:#eafaf1;
+        color:#1e8449;
+        border:1px solid #c8f0da;
+        white-space:nowrap;
+    }
+    .status-badge.pending{ background:#fef5e7; color:#b9770e; border-color:#fbe6bd; }
+
+    /* ---------- شکل‌گیری امّهات (انیمیشن ساده) ---------- */
+    .casting-anim{
+        display:none;
+        margin-top:14px;
+        text-align:center;
+        font-size:13px;
+        color:#8a97a6;
+    }
+    .casting-anim.show{ display:block; }
+    .dots-spinner{
+        display:inline-block;
+        width:26px; height:26px;
+        border:3px solid var(--brand);
+        border-top:3px solid transparent;
+        border-radius:50%;
+        animation:spin .8s linear infinite;
+        vertical-align:middle;
+        margin-left:8px;
+    }
+    @keyframes spin{ 100%{ transform:rotate(360deg); } }
+
+    /* ---------- نتیجه‌ی نهایی (خلاصه) ---------- */
+    .summary-panel{
+        display:none;
+        background:linear-gradient(135deg,#eef6fc,#fdf6ec);
+        border:1px solid #d3e9f7;
+        border-radius:14px;
+        padding:16px;
+        margin-bottom:20px;
+    }
+    .summary-panel.show{ display:block; }
+    .summary-panel h2{
+        margin:0 0 10px;
+        font-size:15px;
+        color:var(--brand-dark);
+    }
+    .summary-block{
+        background:#fff;
+        border-radius:10px;
+        padding:10px 12px;
+        margin-bottom:8px;
+        border-right:4px solid var(--brand);
+    }
+    .summary-block:last-child{ margin-bottom:0; border-right-color:#b9770e; }
+    .summary-block .sb-label{
+        font-size:11.5px;
+        font-weight:bold;
+        color:#8a97a6;
+        display:block;
+        margin-bottom:3px;
+    }
+    .summary-block .sb-text{ font-size:13.5px; line-height:1.8; }
+
+    /* ---------- چیدمان سپری (شیلد) ۱۶ خانه ---------- */
+    .shield-wrap{ display:none; }
+    .shield-wrap.show{ display:block; }
+
+    .shield{
+        direction:rtl;
+        display:grid;
+        grid-template-columns:repeat(8, 1fr);
+        column-gap:var(--col-gap);
+        row-gap:var(--row-gap);
+        max-width:900px;
+        margin:0 auto;
+    }
+
+    .card{
+        position:relative;
+        width:100%;
+        min-width:0;
+        background:#fff;
+        padding:8px 4px;
+        border-radius:10px;
+        cursor:pointer;
+        text-align:center;
+        box-shadow:0 2px 6px #0002;
+        transition:transform .15s ease, box-shadow .15s ease;
+        animation:cardIn .4s ease both;
+    }
+    @keyframes cardIn{
+        from{ opacity:0; transform:scale(.85) translateY(6px); }
+        to{ opacity:1; transform:scale(1) translateY(0); }
+    }
+
+    .card:hover{ transform:translateY(-3px); box-shadow:0 6px 14px #0003; }
+    .card.narrow{ margin:0 auto; }
+    .card.judge-house{ outline:2px solid #b9770e; }
+
+    .card .num{
+        position:absolute;
+        top:-7px;
+        right:-6px;
+        width:20px;
+        height:20px;
+        line-height:20px;
+        border-radius:50%;
+        background:var(--brand);
+        color:#fff;
+        font-size:10px;
+        font-weight:bold;
+        box-shadow:0 1px 4px #0004;
+        z-index:2;
+    }
+
+    .card h3{
+        margin:0 0 4px;
+        font-size:12px;
+        overflow-wrap:break-word;
+    }
+
+    .card pre{
+        margin:0;
+        font-size:15px;
+        line-height:1.15;
+        font-family:inherit;
+    }
+
+    .card .house-topic{
+        font-size:9px;
+        color:#aab2bd;
+        margin-top:2px;
+        overflow-wrap:break-word;
+    }
+
+    .card[data-element="آتشی"]{ border-top:4px solid #e74c3c; }
+    .card[data-element="بادی"]{ border-top:4px solid #f39c12; }
+    .card[data-element="آبی"]{ border-top:4px solid #2980b9; }
+    .card[data-element="خاکی"]{ border-top:4px solid #27ae60; }
+
+    .card[data-fortune="سعد"] h3{ color:#1e8449; }
+    .card[data-fortune="نحس"] h3{ color:#c0392b; }
+    .card[data-fortune="ممتزج"] h3, .card[data-fortune="خنثی"] h3{ color:#8e44ad; }
+
+    .attrs span[data-tag="fortune-سعد"]{ background:#eafaf1; color:#1e8449; border-color:#c8f0da; }
+    .attrs span[data-tag="fortune-نحس"]{ background:#fdedec; color:#c0392b; border-color:#f8d3ce; }
+    .attrs span[data-tag="fortune-ممتزج"], .attrs span[data-tag="fortune-خنثی"]{ background:#f4ecf7; color:#8e44ad; border-color:#e6d3ee; }
+    .attrs span[data-tag="element-آتشی"]{ background:#fdedec; color:#c0392b; border-color:#f8d3ce; }
+    .attrs span[data-tag="element-بادی"]{ background:#fef5e7; color:#b9770e; border-color:#fbe6bd; }
+    .attrs span[data-tag="element-آبی"]{ background:#eaf2f8; color:#2471a3; border-color:#cfe3f3; }
+    .attrs span[data-tag="element-خاکی"]{ background:#eafaf1; color:#1e8449; border-color:#c8f0da; }
+
+    .row-elements{
+        display:flex;
+        justify-content:center;
+        gap:10px;
+        margin-top:16px;
+        flex-wrap:wrap;
+    }
+    .row-el-item{
+        background:#f9fbfd;
+        border:1px solid #e6eef5;
+        border-radius:10px;
+        padding:8px 10px;
+        text-align:center;
+        min-width:70px;
+    }
+    .row-el-item .re-dot{ font-size:16px; line-height:1; }
+    .row-el-item .re-label{ font-size:10.5px; color:#8a97a6; margin-top:3px; }
+
+    .zamir-hokm{
+        display:flex;
+        gap:10px;
+        margin-top:12px;
+        flex-wrap:wrap;
+    }
+    .zh-box{
+        flex:1;
+        min-width:130px;
+        background:#fdf6ec;
+        border:1px solid #f5e2bb;
+        border-radius:10px;
+        padding:10px 12px;
+        text-align:center;
+    }
+    .zh-box .zh-label{ font-size:11.5px; font-weight:bold; color:#b9770e; }
+    .zh-box .zh-dots{ font-size:20px; margin-top:4px; }
+
+    /* ---------- پنجره جزئیات ---------- */
+    .modal{
+        display:none;
+        position:fixed;
+        inset:0;
+        background:#0008;
+        z-index:2000;
+        padding:20px;
+    }
+
+    .box{
+        background:#fff;
+        max-width:600px;
+        max-height:85vh;
+        overflow-y:auto;
+        margin:5% auto;
+        padding:22px 20px;
+        border-radius:12px;
+        position:relative;
+    }
+
+    .close{
+        position:absolute;
+        left:10px;
+        top:10px;
+        background:none;
+        border:none;
+        font-size:16px;
+        cursor:pointer;
+    }
+
+    .box .title-line{
+        margin:0 26px 0 0;
+        font-size:17px;
+        font-weight:bold;
+        line-height:1.6;
+    }
+    .box .title-line .num-badge{
+        display:block;
+        color:var(--brand);
+        margin-bottom:4px;
+    }
+    .box .title-line .house-topic-line{
+        display:block;
+        font-size:12.5px;
+        color:#8a97a6;
+        font-weight:normal;
+        margin-top:2px;
+    }
+
+    .box hr{
+        border:none;
+        border-top:1px solid #e3e3e8;
+        margin:14px 0;
+    }
+
+    .box .head{
+        display:flex;
+        align-items:center;
+        gap:10px;
+    }
+    .box .head pre{
+        margin:0;
+        font-size:20px;
+        line-height:1.1;
+        background:#f4f4f9;
+        border-radius:8px;
+        padding:6px 10px;
+    }
+    .box .head h2{ margin:0; font-size:19px; }
+
+    .attrs-box{
+        margin-top:16px;
+        background:#eef6fc;
+        border:1px solid #d3e9f7;
+        border-radius:10px;
+        padding:12px 14px;
+    }
+    .attrs-box .attrs-label{
+        margin:0 0 8px;
+        font-size:12.5px;
+        font-weight:bold;
+        color:#2c7bb0;
+    }
+    .attrs{ display:flex; flex-wrap:wrap; gap:8px; }
+    .attrs span{
+        background:#fff;
+        color:#2c7bb0;
+        border:1px solid #d3e9f7;
+        border-radius:20px;
+        padding:4px 12px;
+        font-size:12.5px;
+        white-space:nowrap;
+    }
+
+    .trace-box{
+        display:none;
+        margin-top:16px;
+        background:#fdf6ec;
+        border:1px solid #f5e2bb;
+        border-radius:10px;
+        padding:12px 14px;
+    }
+    .trace-title{
+        margin:0 0 10px;
+        font-size:12.5px;
+        font-weight:bold;
+        color:#b9770e;
+    }
+    .trace-item{ margin-bottom:12px; }
+    .trace-item:last-child{ margin-bottom:0; }
+    .trace-role{
+        font-size:12.5px;
+        font-weight:bold;
+        color:#8a97a6;
+        margin-bottom:5px;
+    }
+    .trace-chain{
+        display:flex;
+        align-items:center;
+        flex-wrap:wrap;
+        gap:6px;
+        font-size:12px;
+    }
+    .trace-step{
+        display:inline-block;
+        background:#fff;
+        border:1px solid #f0dfb8;
+        border-radius:8px;
+        padding:4px 9px;
+        text-align:center;
+        line-height:1.5;
+    }
+    .trace-step small{ color:#8a97a6; font-size:10.5px; }
+    .trace-arrow{ color:#d0a44c; font-weight:bold; }
+
+    .bit-num{
+        color:var(--brand);
+        background:#eef6fc;
+        border:1px solid #d3e9f7;
+        border-radius:5px;
+        padding:1px 6px;
+        font-weight:bold;
+    }
+
+    .long-text{
+        margin-top:16px;
+        font-size:14.5px;
+        line-height:2;
+        text-align:justify;
+    }
+
+    footer{
+        background-color:var(--brand);
+        color:white;
+        text-align:center;
+        padding:10px 0;
+        width:100%;
+        font-size:12px;
+    }
+
+    @media (max-width:600px){
+        :root{ --col-gap:4px; --row-gap:8px; }
+        main{ padding:88px 8px 24px; }
+        .card{ padding:5px 2px; border-radius:7px; }
+        .card h3{ font-size:9.5px; margin-bottom:2px; }
+        .card pre{ font-size:10px; }
+        .card .house-topic{ font-size:7.5px; }
+        .box{ padding:16px 14px; }
+        .box .title-line{ font-size:15px; }
+        .box .head h2{ font-size:16px; }
+        .box .head pre{ font-size:15px; }
+        .attrs span{ font-size:11px; padding:3px 9px; }
+        .long-text{ font-size:13.5px; line-height:1.9; }
+    }
+
+    .loader{
+        position:fixed; top:0; left:0; width:100%; height:100%;
+        background-color:#fff; display:flex; justify-content:center; align-items:center; z-index:9999;
+    }
+    .loader div{
+        width:50px; height:50px; border:5px solid var(--brand);
+        border-top:5px solid transparent; border-radius:50%;
+        animation:spin2 1s linear infinite;
+    }
+    @keyframes spin2{ 0%{ transform:rotate(0deg); } 100%{ transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="loader"><div></div></div>
+
+<header>
+    <h1>نیت‌رمل</h1>
+    <p>رمل آنلاین بر پایه‌ی دایره‌ی کامل ابجد</p>
+</header>
+
+<main>
+
+    <div class="niyat-panel">
+        <label>روش انداختن رمل را انتخاب کنید:</label>
+        <div class="mode-row">
+            <button type="button" class="mode-btn active" id="modeRandomBtn">🎲 رمل می‌خواهم بزنم</button>
+            <button type="button" class="mode-btn" id="modeManualBtn">✍️ رمل زده‌ام</button>
+        </div>
+
+        <div id="randomModeBox">
+            <label for="niyatInput">نیت خود را با تمرکز بنویسید:</label>
+            <textarea id="niyatInput" placeholder="مثلاً: آیا این سفر برایم خوب است؟"></textarea>
+            <div class="cast-row">
+                <button class="cast-btn" id="castBtn">🎲 رمل بینداز</button>
+                <span class="status-badge" id="statusBadge" style="display:none;"></span>
+            </div>
+            <div class="casting-anim" id="castingAnim">در حال ساختن امّهات و بنات... <span class="dots-spinner"></span></div>
+        </div>
+
+        <div id="manualModeBox" style="display:none;">
+            <label for="niyatInputManual">نیت خود را بنویسید (اختیاری):</label>
+            <textarea id="niyatInputManual" placeholder="مثلاً: آیا این سفر برایم خوب است؟"></textarea>
+            <label style="margin-top:12px;">شکلِ هر یک از چهار امّ را که زده‌اید انتخاب کنید:</label>
+            <div class="mothers-grid" id="mothersGrid"></div>
+            <div class="cast-row">
+                <button class="cast-btn" id="manualCastBtn">✅ ثبت و محاسبه</button>
+                <span class="status-badge" id="statusBadgeManual" style="display:none;"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="summary-panel" id="summaryPanel">
+        <h2 id="summaryNiyat"></h2>
+        <div class="summary-block">
+            <span class="sb-label">حکم نهایی — خانه ۱۵ (قاضی)</span>
+            <span class="sb-text" id="summaryHokm"></span>
+        </div>
+        <div class="summary-block">
+            <span class="sb-label">لسان الامر — خانه ۱۶ (نتیجه‌ی کلی)</span>
+            <span class="sb-text" id="summaryLesan"></span>
+        </div>
+    </div>
+
+    <div class="shield-wrap" id="shieldWrap">
+        <div class="shield" id="shield"></div>
+    </div>
+
+    <div class="modal" id="m">
+        <div class="box">
+            <button class="close" onclick="document.getElementById('m').style.display='none'">بستن ✕</button>
+
+            <p class="title-line">
+                <span class="num-badge" id="numBadge"></span>
+                <span id="attribution"></span>
+                <span class="house-topic-line" id="houseTopicLine"></span>
+            </p>
+            <hr>
+
+            <div class="head">
+                <pre id="s"></pre>
+                <h2 id="t"></h2>
+            </div>
+
+            <div class="attrs-box">
+                <p class="attrs-label">این شکل که در این خانه افتاده</p>
+                <div class="attrs" id="attrs"></div>
+            </div>
+
+            <div class="zamir-hokm" id="zamirHokmBox" style="display:none;">
+                <div class="zh-box">
+                    <div class="zh-label">ضمیر (نیت باطن)</div>
+                    <div class="zh-dots" id="zamirDots"></div>
+                </div>
+                <div class="zh-box">
+                    <div class="zh-label">حکم (پاسخ نهایی)</div>
+                    <div class="zh-dots" id="hokmDots"></div>
+                </div>
+            </div>
+
+            <div class="row-elements" id="rowElements"></div>
+
+            <div class="trace-box" id="traceBox"></div>
+
+            <hr>
+            <div class="long-text" id="longText"></div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p style="margin:0;">&copy; 2025 نیت‌رمل — بر پایه‌ی دایره‌ی ابجد، تدوین: <strong>محمود خاوری</strong> (گروه آموزشی راقیون).</p>
+</footer>
+
+<script>
+/* ======================================================================
+   بخش ۱: دیتای مرجع ۱۶ شکل رملی (عیناً از صفحه‌ی «دایره ابجد» گرفته شده)
+   ====================================================================== */
+const houses = [
+    { shape:"لحیان", pattern:"•\n••\n••\n••",
+      title:"لحیان", attribution:"تن و جان و زندگانی بدن و عوارض بدن و قوت علم و عمل و صحت و سلامتی و خیال و فکر و خیر رشد و نطق و خوشی و ناخوشی و فکر و اندیشه‌ی سائل و ابتدا کارها و طالع زنان.",
+      organ:"سر", element:"آتشی", fortune:"سعد", boundary:"",
+      talibName:"", talibPattern:"",
+      longText:`در بیت اول دلالت میکند بر صحة سائل و سعادت مند بودن وی و اینکه به آمال و آرزوهای خود می رسد از طریق بزرگان و نیز این فرد مصاحبت با سادات و قضات دارد و نیز دارای حرارت مزاج است.
+
+در بیت دوم دال بر خیرات و نفع و برکت در زندگانی و نیز رونق در کسب و کار و داد و ستد با خوشحالی بدون غبن و ضرر.
+
+در بیت سوم دلالت دارد بر اینکه از برادران و خواهران و نزدیکان نفع و سود خوبی به سائل می رسد و نیز سفر قریب الوقوع در پیش دارد.
+
+در بیت چهارم دلالت بر این دارد که صاحب طالع پدری برومند خیراندیش و خوش سیرت دارد و نیز دلالت بر اینکه صاحب طالع مسكن مناسب و کاری آبرومند تهیه و به اتمام می رساند.
+
+در پنجم اخبار خوبی که دلالت بر نفع یابی صاحب طالع دارد می کند از طریق اولاد با احباب و نیز دال بر این است که هدایا و تحفه هایی به صاحب طالع می رسد.
+
+در بیت ششم دالت دارد بر بیماری و مشقت الا اینکه آن بزودی و خوبی می گذرد و نیز در مورد افرادی که کارخانه و خدمه دارند دلالت دارد بر اینکه کار فرما از ناحیه ی ایشان خسران و خسارت می بیند.
+
+و در هفتم دلالت بر اینکه صاحب طالع اگر مجرد باشد به زودی ازدواج میکند با خانم مومنه و صالحه با ترس و وحشت از دشمنان و حسودان و نیز دلالت بر اینکه غائب متوجه وطن شده میکند.
+
+در بیت هشتم دال بر خوف از دشمنان و نیز در افرادی که می خواهند ارثی را تقسیم کنند بر مخاصمه قبل و قال مردان بازنان و.... می کند.
+
+در نهم دلالت بر سفر قریب الوقوع و مفید و نیز خبری که آن مفرح و خوشحال کننده است و نیز سفر مفیدی میباشد دلالت دارد.
+
+در بیت دهم دال بر این است که صاحب طالع به آمال و آرزوهای خود می رسد از طریق سلاطین و وزراء و حکام و نیز موقعیت اجتماعی او رو به ترقی و نیز از دعای مادران بهره مند است.
+
+در یازدهم از علماء و اشراف و بزرگان امداد می یابد و به برکت آنان به مقاصدش می رسد.
+
+در بیت دوازدهم دلالت دارد بر اینکه معامله سنگین با موفقیت انجام می شود دشمنی دشمنان تبدیل به دوستی میشود و زندانی به راحتی نجات پیدا می کند.
+
+در سیزدهم دلالت بر سفر و حرکت از سلطان و سلامت حال سائل ونیز دال بر نقل و انتقال صاحب طالع دارد.
+
+در چهاردهم دلالت دارد که مراد و مطلوب یا سفر و خروج از بلد حاصل می شود و مطلوب وی با امداد از بزرگان حاصل می شود.
+
+در ۱۵ نیاید و الا رمل را از سر بیاندازد.
+
+در بیت شانزدهم دلالت بر حسن عاقبت و صحت مزاج دارد.` },
+
+    { shape:"حمره", pattern:"••\n•\n••\n••",
+      title:"بیت المال", attribution:"مال و معاش، معامله و خرید و فروش، سود و زیان، قرض دادن و قرض گرفتن، قناعت، امانت، بخل و سخاوت، ودیعت و وصیت، قدوم غایبان و گواه، و آینده‌ی طالع.",
+      organ:"ران و کفل", element:"بادی", fortune:"نحس", boundary:"",
+      talibName:"", talibPattern:"",
+      longText:`در بیت اول طالع دلالت بر حرارت مزاج و خوف و نزاع و طغیان خون در مزاج دارد.
+
+در دوم دلالت بر تلف مال و غضب دوستان و آنان که با ایشان داد و ستد می کنند و نیز دال بر نزاع و کسادی کسب و ضعف و حرفه دارد و نیز دلالت بر حصول طلا با سعادت شاهد می باشد.
+
+در سوم دال بر نزاع خواهران و برادران و خویشان دارد و اینکه صاحب طالع از ایشان خسران و ضرر می بیند و کارهای بی فائده جهت ایشان انجام می دهد.
+
+در چهارم دال بر خوف از مقام و موقعیت اجتماعی دارد و از جهت مقامی تضعیف می شود و نیز صاحب طالع با پدر مخالفت دارد و در ملاکین دلالت بر تلف ملک و مال دارد و در رمل سال احتمال شورش ترکان می رود.
+
+در پنجم دلالت بر لجاجت فرزندان و اینکه غباری از اندوه بر خاطر اهل خانه از ایشان و محبوبان می نشیند و نیز دال بر اخبار کاذبه و موذیه دارد و نیز دلالت بر کمی هدایا و تحفه ها می کند.
+
+در ششم دال بر سوء حال خدام و کارگران و فرار آنها و عبید و خیانتشان برکار فرما و نیز دلالت دارد بر سوء حال بیمار و محبوس؛ اما در مورد آنانکه مبادرت به نگه داری بمیمه ی صغیره از قبیل گوسفندان و مرغداری ها ... اصحاب قناری و کبوتر دال بر قوة حال حیوانات و رونق بازار آنها دارد. اگر مبادرت به رمل سال نمائی و نصرت خارجه در بیت ششم بیاید دال برخونریزی درگیری و طلاق و خراق به صورت عموم و خصوص دارد.
+
+در بیت هفتم دال بر قوه نکاح و شرکت و نماء و ترقی مال و رونق معامله اما با خوف و ترس از مخالفان و قيل و قال و منازعه آنان و نیز دلالت بر بیماری اهل خانه و اطلاع بر امور مخفیه و ضمائر تا ۲۸ روز دیگر دارد.
+
+در هشتم دال بر صحت و سلامت غائب و قوه حال آن و نیز دال بر طول اداء دیون و خوف سائل و عدم وصول محموله ی مطلوب و مقصود دارد.
+
+در نهم دال بر عدم رجوع غائب از سفر و خوف از دزدان و نیز دال بر اضغات الاحلام دارد.
+
+در دهم دلالت بر خوف سائل از حکومت و سلطان و نیز دال بر تفریق بین اهل خانه از ناحیه ی مادر و در کارخانه داره و... دال بر اختلال در حرفه .... دارد.
+
+در یازدهم دال بر مشقت دیدن انسان از دادگستری و امورات دیوانیه و نیز منقلب شدن دوستان عدواً و غلبه نومیدی اما دال بر حصول مسروق است.
+
+در دوازدهم دال بر صحت و سلامت حیوانات كبيره و سقم و بدی حال زندانی و خوف از دشمنان دارد.
+
+در سیزدهم دال بر پیدا شدن مفقود و رجوع غائب و اینکه از طرف نسوان انسان امداد میشود و به مرام و مراد خویش می رسد.
+
+در چهاردهم دلالت بر حصول مطلوب میکند اما با وقفه و نیز دال بر حصول مسروق و بدی حال غائب دارد.
+
+در پانزدهم: در خانه ی پانزدهم نیاید.
+
+در شانزدهم دلالت بر اختلال احوال سائل و خوف او از دشمنان و عاقبت امورات خود؛ اما دلالت بر قوت نکاح و ... میکند.` },
+
+    { shape:"نصره الخارج", pattern:"•\n•\n••\n••",
+      title:"بیت الاقرباء", attribution:"برادران و خواهران و خویشان نزدیک، و مهربازی و سازگاری با هم‌نشینان، و خواب دیدن و نقل و حرکت نزدیک، و علمی چون هندسه و فلسفه، و پادشاهی و دین، و عبادت و زوال چیزی، چون آبادی و مدارس و مساجد؛ و بعضی تعبیر این خانه را از این می‌گویند، اما واضح‌تر آن است که تعبیر را باید از خانهٔ نهم گویند.",
+      organ:"ساق و ران", element:"آتشی", fortune:"سعد", boundary:"خارجی",
+      talibName:"", talibPattern:"",
+      longText:`در بیت اول دلالت بر قوت طالع و حسن ابتداء امور و بهره مندی سائل از احکام و بزرگان و مادر را دارد.
+
+در دوم دال بر بهره مندی انسان از کارهای دولتی و خرج کردن مال به اختیار و حصول و خوشحالی ... دارد.
+
+در بیت سوم دلالت بر مسافرت سائل با بزرگان و شادی دیدن از نزدیکان از برادران و خواهران و نیز دال بر شغل یابی و ایجاد اشتغال با آنان را دارد.
+
+در بیت چهارم دلالت بر سعادت مندی و نفع بینی انسان از جانب پدر و قوت حال آنان که کارهای دولتی انجام می دهند و نیز قوه ی ترقی املاک ملاكان و... ظفر بر دشمنان برای صاحب طالع حاصل می شود، با امداد سلطان و یا اتباع او، و نیز دال بر این است که با شهامت امورات عظیمه را اقدام می کند.
+
+در بیت پنجم دلالت بر صحت حال فرزندان و خوشگذرانی و نیز عشق و عاشقی با محبوبان را دارد و نیز دال بر وصول هدیه و تحفه از غائب را دارد.
+
+در بیت ششم دال بر صحت حال بیمار و نفع یابی کشاورزان از حیوانات کوچک و نیز نفع یابی شیلات و مرغداری ها از آنان را دارد و نیز دال بر نفع بردن کارفرماها از کارگران و نیز خلاصی زندانی از زندان را دارد و نیز دلالت بر باز شدن گره های بسته را دارد.
+
+در هفتم دلالت بر انتفاع سائل از شراکت و معامله و نیز دال بر توجه غائب به سمت وطن و نیز دال بر خوف و ترس سائل از دشمنان و حسودان را دارد، اما اگر اقدام بر ازدواج نماید بی نهایت بهره مند می شود و ابوابی از رزق و روزی بر او گشوده می شود.
+
+در هشتم دلالت بر خوف از حکام و بزرگان و نیز خوف و ترس از فوت بیمار را دارد و در همین خصوص دال بر حسن عاقبت و ترس از کارهای دولتی و نیز دال بر مشاجره ی بر ارث و میراث را دارد.
+
+در نهم دلالت دارد اگر کارهای دولتی که اقتضاء سفر دارد بپذیرد بسیار مفید است و نیز دلالت دارد که به اختیار سفر کند و توبه از معاصی نماید و خواب های رحمانی و صادقه ببیند.
+
+در دهم دلالت بر قوت و اقتدار سلطان معاصر و نیز تزاید جلال و جمال او کند و نیز دال بر امداد رعية سلطان را دارد؛ و نیز دال بر بلند پروازی سائل و احتمال سقوط او را دارد، اما دال بر قوت حال مادران و مادر سالاری و شوکت آنان نیز دارد.
+
+در یازدهم دال بر ظفر ایشان بر مراد و مقصود خود بواسطه ی سلطان و وزراء و اتباع آنان و اینکه شغل دولتی بر او خوب است و نیز دال بر بهره مندی و نفع یابی از قبل نسوان مجلله ... دارد.
+
+در دوازدهم دلالت بر قوت حال بهیمه کبیره را دارد؛ آنانکه مبادرت بر گاو داری و شتر پروری و فیل و اسب داری می کنند نفع یابی می شوند و نیز دلالت بر خلاصی محبوس و ایجاد دشمنی با بزرگان و حکام دارد.
+
+در سیزدهم دلالت بر طلب سائل و رسیدن آن بر مطلوب و پیدا شدن مال دزدیده شده و وجدان مفقود می کند.
+
+در چهاردهم دلالت بر حصول مطلوب مخصوصاً از سفر و صحه حال بیمار و اینکه مراد بر طبق مراد بر آید.
+
+در پانزدهم دلالت دارد بر نیکو بودن اقدام بر امورات عظیمه و معاشرت سائل با حکام و بزرگان و نفع بردن از معامله و شراکت دارد.
+
+در شانزدهم دلالت بر خوشحالی انسان از عواقب امورات و حصول ضمیر به مدت ۳۶ روز دیگر را دارد.` },
+
+    { shape:"بیاض", pattern:"••\n••\n•\n••",
+      title:"بیت الاب", attribution:"پدر و املاک و عقار و ضیاع، و آبادانی آن‌ها، و زراعت و اشجار، و کشتزارها و کاریز، و گورستان و گنج‌ها، و زمین و کار پوشیده، و عاقبت کار، و عمر سائل، و اقامت و شباب.",
+      organ:"ران و کفل", element:"آبی", fortune:"سعد", boundary:"",
+      talibName:"", talibPattern:"",
+      longText:`در اول دلالت بر خوبی حال سائل را دارد و اینکه سفر بر او میمون است و رویاهای او صادقه و رحمانی است و نتیجه آنان را می بیند و دال بر حسن ابتداء کارها را نیز دارد.
+
+در دوم دلالت بر رونق کاسبی کاسب و مال یابی سائل و امیدواری به او و نفع و فائده بردن سائل از سفر و رفقاء و.....
+
+در سوم دلالت بر صلح با ارحام و اقوام و دیدن اموری از خواهران و برادران که موجب خوشحالی سائل میشود و نیز دلالت بر سفر مفید ..... دارد.
+
+در چهارم دلالت دارد که مقام صاحب مقام ثابت و رو به ترقی است و نیز اگر سائل ملکی داشته باشد دال بر نمو و ترقی آن دارد و نیز اگر غائب داشته باشد دال بر وصول خبر از غائب و نیز به کمک پدر به خواسته های خود می رسد و نیز دلالت بر صحت حال بیمار و واقف شدن به ضمیر تا ده روز دیگر دارد.
+
+در پنجم دلالت دارد بر خوشبختی فرزندان و رسیدن به احباب وصله رحم و نیز بشارت بر رسیدن پیک و نامه و خبر خوشحال کننده و هدایا و تحف را دارد.
+
+در ششم دلالت دارد بر صحت و سلامت حیوانات کوچک و ترقی آنان و نیز دلالت دارد به نفع یابی انسان کارفرما از کارگران از جهت قیمت و تکثیر نسل و آزادی زنان و سالاری آنان و نیز دلالت بر بدی حال بیمار دارد اگر سائل بیمار باشد یا سوال از بیمار کرده باشد.
+
+و در هفتم دلالت دارد بر صحت حال غائب و مصلحت نکاح و نیز در مورد سائل که دشمن دارد دال بر قوت دشمنی ... نیز دلالت بر این دارد که اگر سائل سرمایه گذاری با شرکت دیگران کند بسیار عالی و نفع خوبی به وی می رسد در معاملاتی که انجام می دهند.
+
+و در هشتم دلالت دارد بر حصول مال با نزاع در میراث اما محفوظ ایمن از خوف و وحشت است و نیز دلالت بر بدی حال بیمار دارد.
+
+در نهم دلالت دارد بر تدین و استحکام توحید و ولایت سائل و نیز دال بر این است که رویاهای وی صادقانه و رحمانی است و نیز مستفاد است که سفر قریب الوقوع دارد و از آن کامیاب می شود و نیز اهل اسرار است.
+
+در دهم دلالت دارد بر کثرت اشتغال سائل و عمل با احکام و بزرگان و اینکه در نظر دارد امور مهمی را شروع کند و مطلوب وی از سفر برآید.
+
+در یازدهم دلالت دارد بر غرق بودن سائل در اشتغالات دنیویه و رابطه مودتی با بزرگان دارد و از جنس زنان سوء ظن دارد و متنفر است و به مراد دل می رسد.
+
+در دوازدهم دلالت دارد بر قوت حال حیوانات بزرگ و سود بردن صاحبان آنان از آنها و نیز دال بر قیل و قال و نزاع با مخالفان و اگر سائل سوالش از غائب باشد دال بر سوء حال غائب و اگر سائل سوال از محبوس داشته باشد دال بر طول حبس ....
+
+در سیزدهم دلالت دارد بر مراجعه غائب و رسیدن به احباب و اینکه سفر برای سائل نیکو است.
+
+در چهاردهم دال بر اینکه تمام امورات صلاح است انجام او برای سائل و مطلوب کلی برای وی حاصل می شود و اگر سائل از غائب سوال داشته باشد دال است بر سلامت غائب و نیز وجدان مفقود.
+
+و پانزدهم این شکل در میزان نمی آید.
+
+و در شانزدهم دلالت دارد بر حسن عاقبت در تمام امورات و اینکه سفر برای صاحب طالع مفید و نیکو است.` },
+
+    { shape:"قبض الخارج", pattern:"•\n••\n•\n••",
+      title:"بیت الاولاد", attribution:"فرزندان، و نری و مادگی وی، و معشوقه و این که آن کس دوست است یا نه، و تحفه و هدایا، و اخبار و خطوط، و نامه‌های عروسی و طرب و خلعت و لباس، و مسخرگی کردن و بازی و خنده، و صید و شکار و شطرنج، و نبرد و کشتی گرفتن و تیرانداختن...",
+      organ:"بازو", element:"آتشی", fortune:"نحس", boundary:"خارجی",
+      talibName:"", talibPattern:"",
+      longText:`در بیت اول دلالت دارد بر تشویق افکار و اختلال خاطر صاحب طالع و نقل و مسافرت میکند بدون تامل و اختیار و نیز دال بر این است که ضرر و زیان می کند.
+
+در دوم دلالت بر کسادی کسب و ضعف کیس و اتلاف مال برای سائل به واسطه ی نزدیکان حاصل می شود.
+
+در بیت سوم دال بر نقل و انتقال سائل و امداد برادران و خواهران و نزدیکان سائل را دارد.
+
+در چهارم دال بر ضرر ملکی اگر نیت فروش خانه یا خرید آن یا ملکی را داشته باشد و اگر از مقامات دیوانی باشد دال بر اختلال مقام و ضيق موقعیت اجتماعی وی را دارد و نیز دال بر انتقال و مسافرت دارد.
+
+در پنجم دال بر سفر فرزندان و اخبار دروغ و حرف و حدیث و تفریق با دوستان را دارد.
+
+در ششم دلالت بر خوبی حال بیمار را دارد و در مورد کارخانه ها و اماکنی که کارگر دارند دال بر بی رونقی آنان و اخراج بعضی دون بعضی و نیز خیانت کارگر به کارفرما و فرار آنها و نیز دال بر کشف اسرار همدیگر را دارد.
+
+در هفتم دال بر ملالت با شرکاء و دشمنان و تفریق با خانم و خانه و.... دارد.
+
+در هشتم دلالت دارد بر ایمن بودن از خوف و ترس و تفرقه سائل با خویشاوندان و نیز دال بر پیدا شدن مال مسروق و صحت بیمار است.
+
+در نهم دال بر اضغات احلام و سوء عقیده ی سائل و اینکه سفرهای غیر ضروری بدون نفع می کند.
+
+در دهم دلالت دارد بر بیکاری و بیعاری و بی پایه بودن شغل وی و اینکه اگر تحت نظر بزرگان است از کارش معزول میگردد و نیز دال بر تفریق بین او و مادر را دارد.
+
+در یازدهم دلالت دارد بر نفع بردن سائل از بزرگان و کامیابی وی از ایشان و نیز دال بر نومیدی و تنفر از بستگان است.
+
+در دوازدهم دلالت دارد بر ضرر و زیان سائل از حیوانات بزرگ اگر سوال از آنها باشد و دلالت دارد بر خلاصی محبوس و ایمن بودن از دشمنان.
+
+و در سیزدهم دلالت دارد بر اختلال حال سائل و تشویش فکری او و اگر سوال از غائب باشد آمدنش به طول می انجامد و در نهایت بر می گردد بدون نفع .....
+
+در چهاردهم به موقعیت سائل به خروج از بلد یا وطن اگر سوال و نیت از آن باشد.
+
+در پانزدهم میزان دال بر حکم بر حسب سیر نقطه است.
+
+در شانزدهم دال بر این است که تمام امورات زندگانی اقتصادی زناشوئی و روابط عمومی اختلال و مشقت دارد.` },
+
+    { shape:"اجتماع", pattern:"••\n•\n•\n••",
+      title:"بیت العبید", attribution:"غلامان و کنیزان و خدمتگزاران، و مردم فرومایه، و غم و ملالت و بیماری، و حاملگی، و حسد و فسق و فجور، و حبس و کمین ساختن، و سحر و سرّی که پوشیده است، و حرکت پدر و مقام برادر، و چهارپایان کوچک و بزرگ سم‌شکافته، و فراموشی، و اجناس گم‌شده و دزدیده‌شده.",
+      organ:"معده", element:"بادی", fortune:"ممتزج", boundary:"",
+      talibName:"", talibPattern:"",
+      longText:`در بیت اول دلالت دارد بر سلامت سائل و انبساط خاطر او و امورات را با عقل و تدبیر آغاز می کند مخصوصاً امورات دیوانی و تجارت را.
+
+در دوم دلالت دارد بر هنرمندی و انتفاع از اعمال دیوانی و تجارت و شراکت می برد.
+
+در سوم دلالت دارد بر قوت خواهران و برادران و خویشاوندان و نیز شانیت اجتماعی آنان قوی و از وجودشان سائل بهره مند می شود.
+
+در چهارم دلالت بر رضایت پدر از سائل و جمعیت مقام آنکه املاک دارند دال بر تزاید ملک است از حیث کمیت و کیفیت.
+
+در پنجم دلالت بر قوت حال فرزندان و نزدیکان و اینکه از غائب اخبار و آثاری به سائل می رسد، اگر نیت آن غائب باشد.
+
+در ششم دلالت دارد بر بدی حال مریض و احتمال فوت داده و آنانکه کارگرانی دارند دلالت بر رونق کسب و زیاد کردن خدمه من العبيد و الاماء دارد.
+
+در هفتم دلالت دارد بر قوت نکاح دارد اگر مردد است که فلانی را به او می دهند یا خیر نکاح قوت دارد و نیز دلالت بر سلامت غائب در سفرش و مشارکت او با دیگران دارد.
+
+در هشتم مضافاً بر اینکه دال بر بدی حال بیمار است دلالت بر خوف و نزاع از جهت ارث و درگیری و رشد و احتمال فوت یکی از آنان می رود و نیز خوف از سلطان مستفاد است.
+
+در نهم دلالت دارد بر انتفاع بردن سائل و بهره مندی او از حیث نفع و سود مالی از بزرگان و اعاظم و نیز خوابهای خوش دیدن و در صورتی که نیت سفر داشته باشد دلالت بر ایمن بودن و اطمینان از طریق سفر دارد و نیز دال بر این است که از تجارت و شراکت بهره مند می شود.
+
+در دهم دال بر این است که اگر سائل نیت آن قبول شغل دیوانی یا کار سلطانی است و مردد است بپذیرد یا خیر، در صورت پذیرفتن نفع كثير می برد و نیز دال بر رونق قلم جهت اهل قلم و فرح و خوشحالی مادران را دارد و نیز دال بر سلامت بیمار است.
+
+در یازدهم دلالت دارد بر اینکه سائل به آمال و آرزوهای خود می رسد به برکت دوستان و نیز از اموال دیوانی بهره مند می شود و امورات تازه ای را شروع می کند و نیز از نکاح و ازدواج منتفع می شود و آنچه که نیت او بوده تا ۶۶ روز دیگر به آن می رسد.
+
+در دوازدهم دلالت دارد بر اینکه سائل مبادرت بر تکثیر حیوانات بزرگ می کند و غایب به سلامت است و درگیری مالی با دولت پیدا می کند و دوران حبس به طول می انجامد؛ نظام این منسوبات منوط به نیت سائل است.
+
+در سیزدهم دلالت دارد بر مراجعه مسافر و اینکه بیمار خوب می شود و مفقود هم پیدا می گردد.
+
+در چهاردهم دلالت دارد بر رونق کسب و کار و حصول مطالب مخصوصاً از اهل قلم.
+
+در پانزدهم دلالت دارد بر سلامت بدن و زیاد کردن مال و خوبی دیدن از دوستان و مطلوب وی از قبل زنان بر آورده می شود؛ خلاصه دلالت دارد بر سعادت مندی سائل در تمام امورات و موقعیت وی.
+
+در شانزدهم دلالت دارد بر صحت غائب و ثبات عمل دیوانی و حسن عاقبت در تمام احوال را دارد.` },
+
+    { shape:"عتبه الخارج", pattern:"•\n•\n•\n••",
+      title:"بیت الفراش", attribution:"مطلوب و ازدواج و تزویج، و شرکاء و شراکت، و غائب و دوستان و دشمنان، و مصادرهٔ چیزی از کسی که از او ترس دارد، و ضامنان و وکیل و فروشنده و خریدار، و شراب خوردن، و گواه خانهٔ چهارم است در گنج و شکل ایشان، و دفین، و پدربزرگ و مادربزرگ، و همسایگان و دزدان و گریختگان، و مقاصد و مسافر.",
+      organ:"ذکر", element:"آتشی", fortune:"نحس", boundary:"خارجی",
+      talibName:"", talibPattern:"",
+      longText:`در بیت اول دلالت دارد بر آشفتگی ظاهری و تشویش در افکار و اضطراب از جهت حیوانات و نیز سفر بدون اختیار می رود.
+
+در دوم دلالت بر کم پولی و تلف مال و ترس از دزدان و نگرانی مالی و خسران و ضرر دیدن از جهت حیوانات.
+
+در سوم دلالت بر حرکت و انتقال بدون فائده دارد و نیز دال بر قیل و قال و حرف و حدیث فامیلی و برادران و خواهران و جدائی از همدیگر را دارد.
+
+در چهارم دلالت بر دشمنی برادران و تضعیف شدن از جهت مقامی و ضرر ملک کمیتاً و کیفیتاً را دارد از جهت اعداء و دشمنان.
+
+در پنجم دلالت بر رسیدن اخبار هولناک و جدائی فرزندان و نزاع و جدائی با محبوب را دارد.
+
+در ششم دلالت بر صحت بیمار و تقویت حال حیوان يعنى كما و كيفاً؛ سائل اگر نیتش آنان باشد از آنان بهره مند می شود و نیز دال بر خیانت کارگر بر کارفرما و فرار آنان و نیز فرار سربازان و.... دارد؛ مضافاً بر اینکه افشاء اسرار می کنند.
+
+در هفتم دلالت بر شدت جدائی غائب و ترس از دشمنان و قیل و قال با زنان و طلاق و مفارقت آنان و نیز دال بر حصول مسروق است.
+
+در هشتم دال بر حصول میراث و اداء دیون و سوء حال بیمار و ایمن شدن از خوف را دارد.
+
+در نهم دلالت بر ضغث احلام و نقصان در علم و اعتقاد و نیز مبادرت بر سفر بدو سرقت در طریق را دارد.
+
+در دهم دلالت دارد بر تضعیف کارهای دولتی و عزل و نصب مسئولان و ضرر و زیان دیدن از حکام و بزرگان و غلبه دشمنان بر دوستان و تفرقه دیدن از ناحیه ی مادران را دارد.
+
+در یازدهم بر ایجاد دشمنی و نومیدی و نیز دلالت بر خلاص محبوس از حبس دارد.
+
+در دوازدهم دال بر تقویت حال حیوانات بزرگ کما و كيفاً و نیز دال بر خلاصی محبوس و شفاء بیمار دارد.
+
+در سیزدهم دال بر اختلال و افسردگی سائل و خوف و ترس او از آنان که با آنها مرتبط است و نیز ترک طلب مهمات را اضطراراً می نماید.
+
+در چهاردهم دلالت دارد بر یاس از مطلوب به سبب دشمنان و دشمنی دیدن از دوستان و نیز دال بر خوب شدن بیمار است.
+
+در میزان مستحيل الوقوع است.
+
+و در شانزدهم دال بر حسن عاقبت در نیت سائل را دارد و نیز دال بر خلاصی محبوس در اندک زمان دارد.` },
+
+    { shape:"انکیس", pattern:"••\n••\n••\n•",
+      title:"بیت الخوف", attribution:"خوف و خطر و مرگ و بیم، و زهرهای کشنده، و غرق شدن، و مال غایب، و دزد بردن مال، و میراث، و مال قرض، و مال زن، و بیت‌المال، و معشوق پدر و معشوق و مقام، و کمیاب، و چیزهایی که نابود می‌شوند، و نشان زیادی آفت‌ها.",
+      organ:"ناف", element:"خاکی", fortune:"نحس", boundary:"",
+      talibName:"", talibPattern:"",
+      longText:`در بیت اول دلالت دارد بر اینکه فکر سائل مشغول است از جهت زنان و کارهای وی بسته شده.
+
+در دوم دلالت بر قوت معامله و شراکت و رسیدن غائب و به مراد حاصل آید از طریق زوجات و نیز دال بر وصول و پیدا شدن دزد برده و نیز دلالت بر خیانت دوستان دارد.
+
+در سوم بر ملالت دیدن و جدائی از دوستان و برادران و خواهران را دارد و نیز موانع سفر ایجاد می شود.
+
+در چهارم دلالت بر گرفتن املاک و تهیه اسباب ازدیاد ملک و مال کما و کیفا را دارد و نیز از پدر بهره مند می شود وجوداً و مالاً و نیز دال بر رجوع غائب بر مقامش و ایجاد تفرقه و خصومت از جهت زنان و حصول آنان.
+
+در پنجم دلالت بر رسیدن خبر غائب و عشق و عاشقی او با نسوان و متهم شدن او از ناحیه ی دوستان و افسردگی وی در مورد فرزندان و نیز دال بر وصول و پیدا شدن دزد برده است.
+
+در ششم دال بر پیدا شدن مسروق و تهمت و قیل و قال از جهت نسوان و حرف و حدیث کارگران و عبید اما با کارفرما و مولی و نیز دال بر طولانی شدن دوران بیماری و تقویت حال حيوانات کوچک نیز مستفاد است.
+
+در هفتم دال بر سلامت غائب و کارگیری و گسترش کارهای آنان و قوت نکاح و ازدواج و ضرر دیدن از شرکت و حبس دیون و مخاصمه ی مخاصمان و حصول مفقود در گم شده و دزد برده.
+
+در هشتم دال بر حصول میراث و نزاع ملکی و خوف و وحشت از زیاد شدن بدهی ها و اموال ربوی و نیز دال بر بدی حال بیمار دارد و ضمیر واقع می شود تا ۶ روز دیگر.
+
+در نهم دلالت دارد که سائل سفر دور و بدون فائده و نیز دال بر اضغات احلام دارد و نیز دلالت برغفت زنان و زیاد کردن اموال و داد و ستد و مشارکت فراوان دارد.
+
+در دهم دلالت بر خوف و ترس از کارهای حکام با مسارعت علاج آن و رسیدن به مراد و تقویت معاملات و مشارکت شریکان را دارد و نیز دال بر پیدا شدن مفقود است.
+
+در یازدهم دلالت دارد بر نکاح فرزندان، سلامت غائب و قوی بودن سائل در انجام کارهای دولتی و قوت تعشق و بیوت بزرگان.
+
+در دوازدهم دلالت بر قوی بودن دشمنان و حبس غائب توسط ظالمان و بدی حال محبوس دارد و نیز دال بر رونق مالی سائل از بهائم و حيوانات بزرگ است اگر نیت آن باشد.
+
+در سیزدهم دلالت بر مراجعت غائب و پیدا شدن مسروق و خصومت با زنان و بدی حال بیماران را دارد.
+
+در چهاردهم دلالت بر حصول مطلوب با مشقت و رسیدن غائب و مفقود را دارد.
+
+در پانزدهم ممتنع الوقوع است.
+
+در شانزدهم دلالت بر ضعیف بودن دشمنان و قوی بودن زنان را دارد و نیز دال بر نفع یابی از شرکت شرکاء و سوء عاقبت امورات مزبوره را دارد.` },
+
+    { shape:"عقله", pattern:"•\n••\n••\n•",
+      title:"بیت السفر", attribution:"سفرهای دور، و بازگشتن از سفر، و امن راه، و بلاغت، و خویشان و برادر و خواهر و زن و معشوق و عاشق، و فصاحت، و الهام و وحی، و طاعت و عبادت و حج، و خواندن کتاب، و پیامبری، و احکام و نجوم.",
+      organ:"شکم", element:"خاکی", fortune:"نحس", boundary:"",
+      talibName:"", talibPattern:"",
+      longText:`در بیت اول دلالت بر هم و غم و حبس و زندان و تشویق فکری از جهت بیمار و زندانی و اسراء را دارد.
+
+در بیت دوم دلالت بر قوت حرفه و فن و انقلاب بیت المال و خرید و فروش حیوانات و بهائم را دارد.
+
+در بیت سوم دلالت بر درگیری و تفرقه بین برادران و خواهران و نزدیکان را دارد؛ نیز دلالت بر نحوست سفر دارد.
+
+در بیت چهارم دلالت بر ضعف و ملالت از جانب پدر و دور شدن از مقام و موقعیت های اجتماعی و انقلاب مقام به خلافش و نیز دلالت بر خرابی املاک را دارد.
+
+در پنجم دلالت بر قوت جنین حاصله و اینکه غباری از کدورت بر خاطر معشوقان و بیماری احباب و رسیدن اخبار متلونه راست به دروغ را دارد.
+
+در ششم دلالت بر بیع و فروختن دزد برده و طول حبس محبوس و مریض در مرضش را دارد و نیز صاحب نیت با مشقت به ضمیرش می رسد.
+
+در هفتم بر قوت نکاح و معامله را دارد و نیز دلالت بر ظفر بر سارق و مسروق و خوف از بزرگان را دارد.
+
+در هشتم دلالت بر ایمن بودن سائل از تهدید و خوف از اغیار و نیز دال بر اداء دیون و حصول میراث و سارق و مسروق را دارد.
+
+در نهم دلالت بر قوت حال سفر و زیاد شدن علم و دیر آمدن غائب و اضغات احلام را دارد.
+
+در دهم دلالت بر قوی بودن عامل در عملش از طرف حاکمان و بزرگان و خیر و برکت بردن کارفرماها از کارگران و موالی از عبید و اماء را دارد و نیز عقله در این بیت دال بر بیماری مادران و رسیدن به مراد به مدت پنجاه و پنج روز را دارد.
+
+در یازدهم دلالت بر قوت عمل کارهای دولتی و ترس از دوستان و عشق و عاشقی کارگران با همدیگر و هكذا عبید و اماء باهم و نیز دال بر پیدا شدن مفقود نیز است.
+
+در بیت دوازدهم دلالت بر زندان و قید و بند، غل و زنجیر و ترس از دشمنان و قوت حال بهائم را دارد.
+
+در سیزدهم دلالت دارد بر اینکه سائل فوز و بهره برد از مطلوبش علی الخصوص از عبید و اماء و حیوانات و نیز کارفرما حظ و بهره ی وافری را از کارگران می برند و به برکت وجود آنان ابواب رزق و روزی به روی آنان باز می شود و نیز دلالت بر انقلاب سائل و رجوع غائب و صرف نظر از مسافرت را دارد.
+
+و در بیت چهاردهم دلالت بر قوت حال بندگان و کنیزان و هكذا کارگران را دارد و نیز دلالت بر رجوع غائب و خلاصی محبوس از حبس و اینکه سائل به بعضی مقصود و مرام خود می رسد.
+
+در بیت پانزدهم دلالت بر باز شدن گره های بسته و رسیدن به آمال و آرزو را دارد و نیز دلالت برخوف بر محبوس و حامله را دارد.
+
+در بیت شانزده دلالت بر بستگی شدید و گره غیر طبیعی در زندگانی، طول مرض بیمار و خسران دیدن از حیوانات را دارد و نیز دلالت بر قوت حال غائب را دارد.` },
+
+    { shape:"قبض الداخل", pattern:"••\n•\n••\n•",
+      title:"قبض الداخل", attribution:"پادشاه و فرمانروا، و جاه و ریاست، و حرمت و نام نیکو، و مشغول عمل، و عامل و استاد و صنعت، و پدران، و غم‌زاده، و رنجوری فرزند، و املاک زن و مادر، و مقام دزد، و معزول شدن از عمل و امر و نهی.",
+      organ:"گردن", element:"خاکی", fortune:"سعد", boundary:"داخلی",
+      talibName:"", talibPattern:"",
+      longText:`در بیت اول دلالت بر سعادت و بهره مند شدن از امورات و افعال و حاصل شدن مراد و مقصود در ابتداء قوم.
+
+در بیت دوم دلالت بر رونق داشتن کسب و کار و نیز رجوع و پیدا شدن گمشده.
+
+در بیت سوم دلالت بر اینکه سائل از سفر قريب الوقوع انتفاع می برد و از برادران و خواهران و اقارب بهره مند می شود.
+
+در بیت چهارم دلالت دارد بر قوت حال پدر و ازدیاد ملک و پیش آمدن موقعیت های عالی و خوب جهت خرید و فروش املاک و امتعه و موقعیت های خود را کسب کردن از حيث مقامی.
+
+در بیت پنجم دلالت بر وصول اخبار خوشحال کننده و نیز هدایا و تحفه ها و اینکه سائل به مراد و مقصود خود می رسد از ناحیه اقربا و اولاد و محبوبان.
+
+در بیت ششم دلالت دارد بر طول مرض مریضی با حسن عاقبت و زیاد کردن کارگران توسط کارفرما و نیز ازدیاد عبید و اماء و رجوع گمشده و خیریت عاقبت حامله و نیز دلالت بر کتمان اسرار و.... دارد.
+
+در بیت هفتم دلالت دارد بر اینکه سائل به برکت ازدواج به آمال و آرزوهایش میرسد و خیر و برکت به سائل از غائب می رسد و آمدنش به طول می انجامد و نیز دلالت بر خوف و وحشت از دشمنان را دارد.
+
+در بیت هشتم دلالت دارد بر گرفتن ملک برای کشاورزان بعد از مخاصمه و قبل و قال با رفقا و نیز دلالت دارد برگرفتن ارث با زحمت و مشقت و نیز خوف از طول مرض مریض می رود.
+
+در بیت نهم دلالت بر حصول مطلوب سائل در مدت ۴۰ روز و بهره بردن از سفر و نیز دلالت بر رویاهای صالحه و رحمانی دارد.
+
+در بیت دهم دال بر این است که سائل مواجه با حرفهای فراوان و اعمال زیاد خصوصاً از ناحیه ی دولت و حکام و نیز به برکت مادر به مراد خویش می رسد.
+
+در بیت یازدهم دلالت بر تمکن و سعادت و نیز رسیدن به مقصود توسط دوستان و امداد دیدن از بزرگان را دارد.
+
+در بیت دوازدهم دلالت بر قوی بودن مخالفان و بقاء محبوس بر حبس و نیز دال بر کثرت بهائم و حیوانات است.
+
+در سیزدهم دلالت دارد که سائل طالب مجد و عزت و بزرگی است و مساعدت از بزرگان هم می بیند.
+
+در چهاردهم دلالت بر حصول مراد و وصول گم شده و پیدا شدن آن و رسیدن به مقصود به واسطه ی سفر را دارد.
+
+در پانزدهم دلالت بر صحت و سلامت و رسیدن به آمال و آرزوها و پیدا شدن مفقود را دارد.
+
+در شانزدهم دلالت بر پیدا شدن غائب و مال و حسن عاقبت جهت صاحب طالع را دارد.` },
+ 
+
+    { shape:"فرح", pattern:"•\n•\n••\n•",
+      title:"بیت الامید", attribution:"امید و سعادت و کمال، و دوستان، و عشق و نگرانی، و فرزندان زن که از آن زن فرزندانی دیگر باشند یا از شوهر دیگر باشند، و ثنای خزینهٔ پادشاه، و بخت و دولت و حمد.",
+      organ:"قلب و سینه", element:"بادی", fortune:"سعد", boundary:"",
+      talibName:"", talibPattern:"",
+      longText:`در بیت اول دلالت بر قوت طالع و با نشاط بودن صاحب طالع و رسیدن او به آمال و آرزوها را دارد به واسطه دوستان و فرزندان و نیز دلالت بر مطلع شدن به ضمیر و امور صحیحه را دارد در همان روز یا روز بعد.
+
+و در بیت دوم دلالت بر اشتغال سائل به کسب و ارسال نامه ی وی و رسیدن خبر از غائب را دارد.
+
+در بیت سوم دلالت بر محبت دیدن از برادران و خواهران و صداقت بین ایشان و نیز هماهنگ با هم امور اقتصادی را شروع و در نتیجه از آن بهره مند می شوند.
+
+در بیت چهارم دلالت بر خوشان بودن سائل به جهت پدر و بهره بردن او از دوستان و ازدیاد املاک و اسباب را دارد.
+
+در بیت پنجم دلالت بر رسیدن به مقصود توسط فرزندان و دوستان و شنیدن خبرهای خوشحال کننده و نیز بهره مند شدن از تحفه و هدایای ایشان است.
+
+در بیت ششم دلالت بر عشق بازی بین عاشق و معشوق و دوری و تنفر معشوق و نیز دلالت بر صحت بیمار را دارد.
+
+در بیت هفتم دلالت دارد بر قوت حال غائب و محبت زن و مرد و بهره بردن از داد و ستد و بيع و شرا و نیز شراکت برای ایشان خوب است.
+
+در بیت هشتم دلالت بر تامین سائل و سلامت او؛ نیز دیون او ادا می شود و نیز دلالت بر قیل و قال بین دوستان و نیز دلالت بر بهره مندی سائل از ارث و ازدواج را دارد.
+
+در بیت نهم دلالت بر ترقی سائل در علوم و دیانت و رسیدن به مقصود از سفر و ایمن بودن او از مسافرت و نیز دیدن رؤیای رحمانی و صادقه دارد.
+
+در بیت دهم دلالت دارد که سائل اگر شغل دولتی بپذیرد برایش سودمند است و برکت فراوان دارد و نیز از مادر و بزرگان و حکام بهره ها می برد.
+
+در بیت یازدهم دلالت دارد بر رسیدن به آمال و دوستان حقیقی و بهره بردن از فرزندان را دارد.
+
+در دوازدهم دلالت دارد بر منقلب شدن دشمنان به دوستان و نیز دال بر نجات زندانی از حبس و بهره مندی از بهائم اگر مبادرت به آن شغل بکند.
+
+در سیزدهم دلالت دارد بر پرداخت مطالبات سائل و خوشحالی او از این جهت و طالب به معشوق می رسد و غائب بر می گردد.
+
+در چهاردهم دلالت دارد بر رسیدن سائل به نیت و مرادش توسط دوستان و مساعدت فرزندان و.....
+
+در میزان (خانه ی پانزدهم) نمی آید.
+
+در شانزدهم دلالت دارد بر حسن عاقبت سائل و سلامت غائب.` },
+
+    { shape:"نصره الداخل", pattern:"••\n••\n•\n•",
+      title:"بیت الاعداء", attribution:"دشمنان و بدگویان، و چهارپایان بزرگ، و گرد شدن، و بند و زندان و حبس و گرفتاری، و معزولی از کار و منصب، و شقاوت.",
+      organ:"زانو و قلب", element:"آبی", fortune:"سعد", boundary:"داخلی",
+      talibName:"", talibPattern:"",
+      longText:`در بیت اول دلالت دارد بر صحت النفس بودن سائل و حسن شروع کاری او و رسیدن به حاصل شدن مقصود او توسط دوستان و نیز بهره مندی او از نسوان و کارهای دولتی.
+
+در بیت دوم دلالت دارد بر سعادت مندی سائل و رونق کسب او در تجارت و مال و ثروت؛ نیز دلالت بر خون گرم بودن او و حسن معاشرت با دوستان داشتن .....
+
+در بیت سوم دلالت بر بهره مندی سائل از بزرگان و برادران و نزدیکان را دارد.
+
+در بیت چهارم دلالت بر امداد پدر بر سائل و قوف مزاج و ازدیاد املاک و معموریت مقام و حسن عاقبت را دارد.
+
+در بیت پنجم دلالت بر قوت حال فرزندان و رسیدن دوستان و هدایا و شنیدن اخبار خوشحال کننده را دارد.
+
+در بیت ششم دلالت دارد بر انتفاع سائل از حیوانات کوچک از پرندگان و گوسفندان و... اگر اقدام بر آنها کند و نیز دلالت بر بهره مندی کارگران از کارفرماها و انتفاع از عبید و اماء را دارد و نیز در سائل غلبه برودت موجب بیماری آن شده اگر مریض باشد و نیز دلالت برکتوم بودن و حسن عاقبت او را دارد.
+
+در بیت هفتم دلالت بر باز شدن درهای رحمت الهی برای سائل از نکاح و ازدواج را دارد و به برکت آن به مراد و مقصود خودش می رسد و از شراکت بهره می برد اگر امری را مشارکت کند و نیز دلالت بر سالم بودن غائب و ایمن بودن از مخالفان را دارد.
+
+در بیت هشتم دلالت بر ایمن بودن از ترس و وحشت و رسیدن مطالباتش که دست مردم بوده و بر مخالفان ظفر می یابد به کمک بزرگان.
+
+در بیت نهم دلالت دارد بر صحت اعتقاد او و بهره مند شدن او از مردم و نیز دال بر دیدن خوابهای خوشحال کننده و ازدواج از غیر وطن و ایمن بودن آن حضرا و سفرا و قوت و اقتدار آن در امورات دولتی.
+
+در بیت دهم دلالت دارد بر رونق کسب و کار او به کمک حکام و افراد دولتی و بهره مندی او از کارهای دولتی و زنان و مادر و نیز موقعیت اجتماعی او رو به ترقی است.
+
+در بیت یازدهم دلالت دارد بر رسیدن به تمام آرزوها و رسیدن سائل به آنها توسط زنان و دوستان واقعیش.
+
+در بیت دوازدهم دلالت دارد بر اینکه غباری از کدورت بر وجود سائل با دوستان می نشیند و دوست مبدل به دشمن و سپس مجدد منقلب به دوست می شود و اگر سائل مبادرت به پرورش و نگه داری حیوانات بزرگ کند از آنان سودمند میشود و نیز دلالت بر حسن عاقبت محبوس را دارد.
+
+در بیت سیزدهم دلالت دارد بر محبت و عطوفت دیدن از زنان و تلاش سائل در رسیدن به نیت و نیز دلالت بر مراجعات مسافر و غائب را دارد با سرعت.
+
+در چهاردهم دلالت دارد بر واقع شدن مطلوب کلی به امداد وزراء و دولتیان و بزرگان و اینکه غائب بر می گردد و نامه به سائل می رسد.
+
+در پانزدهم دلالت بر حصول مطلب کلی و ایجاد موقعیت سفر و بهره مالی بردن و مبادرت بر معامله با بزرگان را دارد.
+
+در شانزدهم دلالت دارد بر حسن عاقبت در هر کاری که وارد شود و نیز دلالت برقوت کسب و رسیدن به آمال و آرزوها را دارد و نیز دلالت بر طول عمر با سعادت را دارد.` },
+
+    { shape:"نقی الخد", pattern:"•\n••\n•\n•",
+      title:"بیت الطالب", attribution:"سر نفس، و رأی و تدبیر، و عاقبت مادر، و سفر معشوق، و مال دشمن؛ و شاهد بیت اول طالع می‌باشد.",
+      organ:"ساق", element:"آبی", fortune:"نحس", boundary:"",
+      talibName:"", talibPattern:"",
+      longText:`در بیت اول دلالت بر نزاع و وحشت و انقلاب امور و عدم اعتماد بر صحت اقدام بر کارها.
+
+در بیت دوم انقلاب در مال و بهره بردن از ظالمان و کارهای ربوی.
+
+در بیت سوم دلالت دارد بر قیل و قال با برادران و خواهران و خویشاوندان و ماموریت پیدا کردن از بزرگان و متوسط بودن حال مسافر.
+
+و در بیت چهارم دلالت دارد بر تزلزل در رابطه با پدر و تزلزل در مقام و عزل و نصب او و خسارت مالی دیدن.
+
+در بیت پنجم دلالت دارد بر رسیدن به منویات تا پانزده روز دیگر و نیز دلالت بر خوبی دیدن از دوستان و فرزندان و نیز دلالت بر شنیدن اخبار صادقه با کاذبه را دارد.
+
+در بیت ششم دلالت بر سحر زدگی و خوب شدن بیمار و مجدد مریض شدن او؛ نیز دلالت بر ایجاد تفرقه بین دوستان و کارگر و کارفرما را دارد.
+
+در بیت هفتم دلالت بر ضعف رابطه و سردی آن با زنان و شریکان و غائبان و وسوسه تفکر آنها به همدیگر و انقلاب حال مسافر.
+
+در بیت هشتم دلالت دارد بر اداء قرض و مجادله بر ارث با مال غائب و نیز دلالت بر وحشت سائل را دارد.
+
+در نهم دلالت دارد بر تشویش فکری سائل در حال حاضر و نیز دلالت بر وحشت از سفر و دیدن خوابهای متلونه مشوش و شیطانی و نیز دلالت بر کمک دیدن از بزرگان را دارد.
+
+در بیت دهم دلالت دارد بر اقتدار دولت و حکومت و اینکه مالی از بزرگان به سائل می رسد و نیز دلالت بر متوسط بودن شغل و حرفه سائل را دارد.
+
+در بیت یازدهم دلالت بر بهره مندی سائل از شغل دولتی، بهره مندی او از بزرگان و قیل و قال او با دوستان و شنیدن خبر از غائب و رسیدن نامه به او را دارد.
+
+در بیت دوازدهم دلالت دارد بر قوی بودن دشمنان و ترس از حکام و زیاد کردن چهارپایان و دلالت بر خلاصی زندانی از حبس و بازگشت مجدداً به زندان و... دارد.
+
+در بیت سیزدهم دلالت بر بازگشت غائب از سفر با سرعت و رجوع مال مسروق و خوب بودن حال سائل و رسیدن او به مراد و پیدا شدن بارقه ی امید در کارش ......
+
+در بیت چهاردهم دلالت دارد بر اینکه سائل بر بعضی از مقصودش می رسد با کمک حاکم.
+
+در بیت پانزدهم و لا يقع في الميزان فتامل.
+
+در شانزدهم دلالت دارد بر سلامت بیمار، رسیدن به مراد دل از ناحیه ی زنان و سوء عاقبت سائل؛ اعذنا الله و اخواننا المومنين منها.` },
+
+    { shape:"عتبه الداخل", pattern:"••\n•\n•\n•",
+      title:"بیت المطلوب", attribution:"نفس و غیره، و مطلوب، و منتهای خیال، و آینهٔ رمل؛ و شاهد چهارم است.",
+      organ:"فرج و ران", element:"بادی", fortune:"سعد", boundary:"داخلی",
+      talibName:"", talibPattern:"",
+      longText:`در بیت اول دلالت بر شروع امور مفید و حصول خرسندی از جانب زنان را دارد.
+
+در بیت دوم دلالت بر مال اندوزی و قوت آن را دارد.
+
+در بیت سوم دلالت بر حصول مطلوب به مدت شش روز دیگر و نیز دلالت بر نفع و خیر دیدن صاحب طالع از برادران و خواهران و خویشاوندان و سفر قریب الوقوع پیش آمدن برای وی است.
+
+در بیت چهارم دلالت بر زیاد کردن املاک و بهره مندی از ناحیه ی پدر و حسن عاقبت در مقام و طول عمر را دارد.
+
+در بیت پنجم دلالت بر شنیدن اخبار مسرت بخش و حاصل شدن مقصود از طرف معشوق و نیز دلالت بر محبت فرزندان و تحفه و هدایا را نیز دارد.
+
+در بیت ششم دلالت بر زیاد کردن کارگران و عبید و اماء و کتمان اسرار و خلاصی محبوس و قیل و قال با زنان را دارد و نیز دلالت بر میانه بودن حال بیمار می کند.
+
+در بیت هفتم دال بر قوت نکاح و حصول امید از زنان و شریکان و سلامت غائب و ایمنی از دشمنان را دارد.
+
+در بیت هشتم دلالت بر ایمن بودن از ترس و وحشت و نزاع با زنان دارد و نیز دلالت بر رونق در معامله و کسب و کار نیز می کند.
+
+در بیت نهم دلالت بر سلامت غائب و امنیت راهها و صحت عقیده و رویاهای خوب و هدایا و تحفه ها دارد.
+
+در بیت دهم دلالت بر بهره مندی از ناحیه مادر و زیاد شدن اشتغالات دولتی و.... دارد.
+
+در بیت یازدهم دلالت بر رسیدن سائل به مامول و آرزوهای خود به واسطه ی دوستان و زیاد شدن دوستان وی و بهره مندی از ایشان و اعاظم را دارد.
+
+در دوازدهم دلالت بر بهره مندی وی از حیوانات بزرگ مانند اسب و شتر و... اگر اقدام به آنها کند و نیز دلالت بر حفظ و انحفاظ وی از مخالفان و نیز دلالت بر طول زندان زندانی دارد و نیز دال بر تخلص وی بعد از مدت طولانی به آسانی می کند.
+
+در سیزدهم دلالت بر سعادت در زندگانی و رسیدن به آرزوها توسط بزرگان و غائب و... دارد و نیز دلالت بر سلامت مزاج میکند.
+
+در چهاردهم دال بر حصول مقصود کلی و مطلوب حقیقی به آسانی و خوشحالی را دارد و نیز دلالت بر بالا رفتن شان و موقعیت اجتماعی توسط امراء و بزرگان می کند.
+
+در پانزدهم واقع نمی شود فتامل.
+
+در شانزدهم دلالت بر طول عمر و حسن عاقبت و آمدن مسافر بعید و هنرمندی و فعالیت های اجتماعی را دارد.` },
+
+    { shape:"طریق", pattern:"•\n•\n•\n•",
+      title:"بیت القضاء", attribution:"فرح اکبر، و قاضی، و میزان الرمل؛ و اگر رمل خطا شده باشد از این خانه می‌فهمند؛ و احوال امور کلی و قضایایی که باشد را از این خانه گویند، مثل این‌که کسی دعوی کرده یا نه، یا این کس را با آن کس مشورت کنم یا نه؛ و شاهد هفتم است.",
+      organ:"پای راست", element:"آبی", fortune:"سعد", boundary:"",
+      talibName:"", talibPattern:"",
+      longText:`در اول دلالت بر انقلاب امور به سوی بهبودی و نیز دال بر انقلاب احوال و صحة مزاج و افتتاح امور و رسیدن به آمال و آرزوها توسط بزرگان.
+
+در دوم دال بر نابودی مال و حصول مجدد آن و ترقی انسان در رشد امورات معیشتی و محبت اجتماعی و خوشحالی غائب.
+
+در سوم دلالت بر سفر و مسافرت مفید با نزدیکان و بستگان را دارد.
+
+در چهارم دال بر زیاد کردن مال و نیز دلالت بر هنرمندی و انقلاب در مقام و موقعیت و رسیدن به حوائج توسط بزرگان و حسن عاقبت را دارد.
+
+در پنجم دلالت بر رسیدن به آمال توسط معشوق و خیر و برکت دیدن از اولاد و شنیدن اخبار خوشحال کننده و رسیدن به نیت به مدت پانزده روز.
+
+و در ششم دلالت بر طلاق و جدائی و خوب شدن بیمار و مجدد بیمار شدن او با حسن عاقبت و میانه بودن حال کارگران و عبید و اماء و حیوانات را دارد.
+
+در هفتم دال بر سلامت غائب و مسافر و میل او به برگشتن به وطن و نیز دال بر نفع بردن از معامله و شراکت با دیگران و نیز متوسط بودن امر نکاح.
+
+در هشتم دال بر نزاع با زنان اما بدون خطرات.
+
+در نهم دلالت بر سفر مفید و رویای پریشان و نیز دال بر توبه و انابه از اعمال قبیح و ناپسند.
+
+در دهم دلالت بر بهره مندی از مادر و بزرگان و سفر و کار کردن برای ایشان و ترقی انسان در سفر و امورات مفوضه.
+
+در یازدهم دلالت بر منقلب شدن دوستان و رسیدن به مطلوب به واسطه ی عظماء و غائب.
+
+در دوازدهم دلالت بر زیاد کردن چهار پایان بزرگ و نحوست حال مریض و خلاصی زندانی از قید و بند و رجوع مجدد او دارد.
+
+در سیزدهم دلالت بر رجوع غائب و مردد بودن سائل بین دو امر.
+
+در چهاردهم دال بر رسیدن به بعضی مطلوب و قوی بودن سائل در بعضی امورات و حرفه ها.
+
+در پانزدهم دال بر بهره مندی از کارهائی که انجام می دهد و از مقامش به مقام دیگر منتقل می گردد؛ به واسطه ی رفقا به منویاتش می رسد.
+
+در شانزدهم دلالت بر حسن عاقبت و سلامت بیمار و رسیدن به مراد و آمدن غائب میکند.` },
+
+    { shape:"جماعت", pattern:"••\n••\n••\n••",
+      title:"لسان الامر", attribution:"فراغت و ترک چیزی، یا طلب چیزها با این خانه که چهارم امر را ضرب کنند، و عاقبت جملهٔ مهمات را در آن بینند، و الله اعلم.",
+      organ:"پشت", element:"خاکی", fortune:"ممتزج", boundary:"",
+      talibName:"", talibPattern:"",
+      longText:`در بیت اول دلالت بر قوت طالع و اعمال و شغلهای دولتی را دارد و نیز دلالت بر تحیر و سرگردانی صاحب طالع می کند.
+
+در دوم دلالت بر رونق در کاسبی و بهره مندی صاحب طالع از اهل قلم و به تعویق افتادن مطالبات را دارد.
+
+در سوم دلالت بر توقف در مهمات و منع از سفر است، مضافاً اقربا و اخوه.
+
+در چهارم دلالت بر ثبات مقام و جمعیت آنان و رشد و نمو املاک و قوت موقعیت اجتماعی پدر و نیز دال بر ترک سفر است.
+
+در پنجم دلالت میکند به شنیدن اخبار و رسیدن هدايا و انفاق بر دوستان و فرزندان.
+
+در ششم دلالت میکند بر اینکه گم شده پیدا نمی شود و بیمار خوب نمی گردد مگر بعد از مدت طولانی و محبوس همچنین و احوال کارگران متوسط است.
+
+در هفتم دلالت دارد بر حسن مشارکت و اقتدار غائب در سفر و طلب نکاح و پیدا شدن گمشده بعد از زمان طولانی.
+
+در هشتم دلالت میکند بر رسیدن مفقود و اینکه لازم است از دشمنی با دیگران احتراز کند.
+
+در نهم دلالت بر اضغات احلام و منفعت دیدن از سفر و بهره مندی اهل قلم و... است.
+
+در دهم دلالت بر تحصیل شغل دولتی برای غائب با خشونت و ترس و نیز دال بر وقفه افتادن از انجام مهمات و نیز دال بر بهره مندی از ناحیه ی مادر است.
+
+در یازدهم دلالت بر جمع کردن مال و با اقتدار بودن سائل و سعادت مندی و امیدواری را دارد.
+
+در دوازدهم دلالت بر دشمنی جماعتی با سائل و تصرف عدوانی و بقاء محبوس در حبس و نیز دال بر حصول چهار پایان جهت آنان که نیتشان آن است.
+
+در سیزدهم دلالت بر آمدن غائب و طالب بودن سائل مجد و عظمت را و متاسفانه دلالت بر عدم حصول مراد مرید می کند.
+
+در چهاردهم دال بر حصول مقصود است با وقفه.
+
+در پانزدهم دلالت بر سرگردانی سر و حاصل شدن مقصود به مدت صد و بیست روز دیگر.
+
+در شانزدهم دال بر حسن عاقبت و خوبی آن و در صورتی که جماعت در رمل تکرار شود دال بر مسدود بودن کارها است.` }
+];
+
+const extras = [
+    { boundary:"خارج", gender:"نر", letters:"ا، ف", openClosed:"باز", age:"جوان", guild:"علما", nature:"حیوانی",
+      place:"مساجد", event:"امنیت", time:"حال", substance:"معرفی (؟)", gem:"طلا = ذر",
+      price:"بسیار با ارزش", geoShape:"دائره", direction:"شرقی", color:"سفید مایل به زرد", temperament:"گرم و خشک", weight:"سبک", scent:"معطر",
+      fruit:"خربزه", illness:"صفرا", taste:"شیرین", animal:"شتر", season:"پاییز", bird:"بلدرچین (؟)",
+      planet:"مشتری", zodiac:"قوس", day:"پنجشنبه", dayNight:"روز", tool:"کارد - چاقو" },
+
+    { boundary:"ثابت", gender:"نر", letters:"ب، ص", openClosed:"بسته", age:"جوان", guild:"قصاب", nature:"عصبی",
+      place:"معابد یهود", event:"قتال", time:"آینده", substance:"حیوانی", gem:"آهن",
+      price:"کم‌ارزش", geoShape:"طویل", direction:"غربی", color:"سرخ", temperament:"گرم و مرطوب", weight:"سبک", scent:"عناب",
+      fruit:"گرد آلو", illness:"دم", taste:"تلخ", animal:"خوک", season:"پاییز", bird:"کلاغ",
+      planet:"مریخ", zodiac:"حمل", day:"سه‌شنبه", dayNight:"روز", tool:"تبر - تیشه" },
+
+    { boundary:"خارج", gender:"نر", letters:"ج، ق", openClosed:"باز", age:"پیر", guild:"ملوک", nature:"نفسانی",
+      place:"قصر", event:"جور و ظلم", time:"حال", substance:"معدنی", gem:"طلا",
+      price:"کثیرالقیمه", geoShape:"طویل", direction:"شرقی", color:"زرد مایل به سرخی", temperament:"گرم و خشک", weight:"سبک", scent:"زنجبیل",
+      fruit:"سیب", illness:"گرمی خون", taste:"شیرین", animal:"اسب", season:"تابستان", bird:"قمری",
+      planet:"شمس", zodiac:"اسد", day:"یکشنبه", dayNight:"شب", tool:"شمشیر" },
+
+    { boundary:"ثابت", gender:"ماده", letters:"د، ر", openClosed:"بسته", age:"جوان", guild:"زهار", nature:"طبیعی",
+      place:"شاهراه", event:"طغیان آب", time:"گذشته", substance:"نباتی", gem:"مروارید",
+      price:"کثیرالقیمه", geoShape:"دائره", direction:"شمالی", color:"سفید متوسط", temperament:"سرد و مرطوب", weight:"سنگین", scent:"سبزی",
+      fruit:"سیب سفید", illness:"بلغم و خون", taste:"شور", animal:"الاغ وحشی", season:"بهار", bird:"کبوتر",
+      planet:"قمر", zodiac:"سرطان", day:"یکشنبه", dayNight:"شب", tool:"عصا - چوبدستی" },
+
+    { boundary:"خارج", gender:"نر", letters:"ه، ش", openClosed:"باز", age:"جوان", guild:"وزراء", nature:"شهوانی",
+      place:"سنگستان (آسیا)", event:"وبا و مرض", time:"گذشته", substance:"معدنی", gem:"آهن",
+      price:"ارزان", geoShape:"مثلث", direction:"شرقی", color:"خاکستری", temperament:"گرم و خشک", weight:"سبک", scent:"سقم (؟)",
+      fruit:"توت", illness:"دم و صفرا", taste:"تلخ", animal:"الاغ", season:"زمستان", bird:"طیهو",
+      planet:"راس", zodiac:"دلو", day:"سه‌شنبه", dayNight:"روز", tool:"کمان" },
+
+    { boundary:"ثابت", gender:"خنثی", letters:"و، ت", openClosed:"بسته", age:"پیر", guild:"اهل علم", nature:"؟ (نامشخص در تصویر)",
+      place:"مکتب و مدرسه", event:"وقوع اراجیف", time:"گذشته", substance:"حیوانی", gem:"طلا فروش",
+      price:"وسط‌القیمه", geoShape:"مجوف", direction:"غربی", color:"سبز مایل به بنفش", temperament:"گرم و مرطوب", weight:"سبک", scent:"طعام (؟)",
+      fruit:"انار", illness:"ازدیاد خون", taste:"شیرین", animal:"قاطر", season:"تابستان", bird:"مرغ",
+      planet:"عطارد", zodiac:"جوزا", day:"چهارشنبه", dayNight:"نامشخص (؟)", tool:"—" },
+
+    { boundary:"خارج", gender:"نر", letters:"ز، ث", openClosed:"باز", age:"جوان", guild:"وزراء", nature:"ماسکه",
+      place:"محل فتنه", event:"وبا و مرض", time:"گذشته", substance:"معدنی", gem:"آهن",
+      price:"بسیار با ارزش", geoShape:"طویل", direction:"شرقی", color:"خاکی", temperament:"گرم و خشک", weight:"سبک", scent:"—",
+      fruit:"غوره", illness:"دم و صفرا", taste:"تند", animal:"الاغ", season:"زمستان", bird:"کلاغ",
+      planet:"ذنب (زنب)", zodiac:"جدی", day:"سه‌شنبه", dayNight:"شب", tool:"چوبی یا فلزی (؟)" },
+
+    { boundary:"داخل", gender:"ماده", letters:"ع، غ", openClosed:"بسته", age:"پیر", guild:"دهاقین", nature:"ماسکه",
+      place:"کنیسه یهود", event:"زلزله", time:"حال", substance:"کانی", gem:"قلع",
+      price:"کم‌ارزش", geoShape:"طویل", direction:"جنوبی", color:"زرد مایل به خاکستری", temperament:"سرد و خشک", weight:"سنگین", scent:"خشک",
+      fruit:"سبزی و تره‌بار", illness:"سوداء", taste:"ترش", animal:"الاغ", season:"زمستان", bird:"مرغابی",
+      planet:"زحل", zodiac:"جدی", day:"شنبه", dayNight:"شب", tool:"سنگ" },
+
+    { boundary:"منقلب", gender:"نر", letters:"ط، ذ", openClosed:"بسته", age:"پیر", guild:"دهقانان", nature:"حافظه",
+      place:"اسطبل", event:"آفت و مرض", time:"گذشته", substance:"کانی", gem:"آهن",
+      price:"با ارزش یا کم‌ارزش", geoShape:"دائره", direction:"جنوبی", color:"سیاه مایل به سرخی", temperament:"سرد و خشک", weight:"سنگین", scent:"معطر",
+      fruit:"آلو سیاه", illness:"ورم سوداء", taste:"ترش و تند", animal:"میش وحشی", season:"زمستان", bird:"کبک",
+      planet:"زحل", zodiac:"دلو", day:"شب یکشنبه (؟)", dayNight:"روز", tool:"نیزه و عمود" },
+
+    { boundary:"داخل", gender:"ماده", letters:"ی، ض", openClosed:"بسته", age:"جوان", guild:"امراء و بزرگان", nature:"شهوانی",
+      place:"بازار", event:"فراوانی نعمت", time:"آینده", substance:"کانی", gem:"سیم",
+      price:"بسیار با ارزش", geoShape:"مربع", direction:"جنوبی", color:"زرد", temperament:"سرد و خشک", weight:"سنگین", scent:"معطر",
+      fruit:"به", illness:"سودا", taste:"شیرین و تلخ", animal:"اسب", season:"بهار", bird:"بلبل",
+      planet:"شمس", zodiac:"اسد", day:"شب یکشنبه (؟)", dayNight:"شب", tool:"سپر" },
+
+    { boundary:"منقلب", gender:"نر", letters:"ک، ظ", openClosed:"بسته", age:"صبی (نوجوان)", guild:"مطربان", nature:"طبیعی",
+      place:"میش‌گاه", event:"فسق و ظلم", time:"آینده", substance:"حیوانی", gem:"مروارید",
+      price:"بسیار با ارزش", geoShape:"دائره", direction:"غربی", color:"گندمی مایل", temperament:"گرم و مطلوب", weight:"سبک", scent:"عطربات (؟)",
+      fruit:"میوه", illness:"فلج و خون", taste:"شیرین", animal:"اسب", season:"پاییز", bird:"بلبل",
+      planet:"زهره", zodiac:"میزان", day:"روز جمعه", dayNight:"روز", tool:"خنجر (؟)" },
+
+    { boundary:"داخل", gender:"ماده", letters:"ل، غ", openClosed:"بسته", age:"پیر", guild:"علماء و قضات", nature:"نفسانی",
+      place:"محل علماء", event:"امنیت", time:"آینده", substance:"نباتی", gem:"نسیم",
+      price:"بسیار با ارزش", geoShape:"دائره", direction:"شمالی", color:"سفید مایل به کبودی", temperament:"سرد و مرطوب", weight:"سنگین", scent:"معطر",
+      fruit:"الوسفند و قطره طلا (کشمش)", illness:"رطوبت و بلغم", taste:"شیرین", animal:"شتر", season:"تابستان", bird:"قرقاول",
+      planet:"مشتری", zodiac:"حوت", day:"پنجشنبه", dayNight:"روز", tool:"مقمعه" },
+
+    { boundary:"منقلب", gender:"ماده", letters:"م، ا", openClosed:"بسته", age:"جوان", guild:"عسکران", nature:"غضبی",
+      place:"محل خواب", event:"خوف و هراس", time:"حال", substance:"نباتی", gem:"حدید",
+      price:"متوسط‌القیمت", geoShape:"دائره", direction:"شمالی", color:"کبود", temperament:"سرد و مرطوب", weight:"سنگین", scent:"فسق (؟)",
+      fruit:"کشمش", illness:"خون و سودا", taste:"تلخ و تند", animal:"الاغ", season:"پاییز", bird:"پرستو و کبک (؟)",
+      planet:"مریخ", zodiac:"عقرب", day:"سه‌شنبه", dayNight:"روز", tool:"— (متن تصویر ناخوانا)" },
+
+    { boundary:"داخل", gender:"ماده", letters:"ن، ب", openClosed:"بسته", age:"جوان", guild:"عبار", nature:"حیوانی",
+      place:"میش‌گاه", event:"نعمت افزون و فراوانی", time:"آینده", substance:"حیوانی", gem:"ذهبی",
+      price:"با ارزش", geoShape:"مربع", direction:"غربی", color:"سفید", temperament:"گرم و مطلوب", weight:"سبک", scent:"المار (؟)",
+      fruit:"انگور", illness:"خون و سودا", taste:"شیرین", animal:"میش", season:"پاییز", bird:"داهیه",
+      planet:"زهره", zodiac:"ثور", day:"شب جمعه", dayNight:"شب", tool:"نیزه کوتاه چوبی" },
+
+    { boundary:"منقلب", gender:"ماده", letters:"س، ج", openClosed:"باز", age:"جوان", guild:"بید و ابلیس (؟)", nature:"انسانی",
+      place:"شاهراه", event:"ترس", time:"حال", substance:"نباتی", gem:"مروارید",
+      price:"متوسط‌القیمه", geoShape:"طویل", direction:"شمالی", color:"سفید مایل به سبزی", temperament:"سرد و مرطوب", weight:"سنگین", scent:"و جوب (؟)",
+      fruit:"حزخ", illness:"بلغم", taste:"متور", animal:"گوسفند", season:"تابستان", bird:"کجنگ و قاری (؟)",
+      planet:"قمر", zodiac:"سرطان", day:"شب دوشنبه", dayNight:"شب", tool:"تیر" },
+
+    { boundary:"ثابت", gender:"خنثی", letters:"ع، د", openClosed:"بسته", age:"پیر", guild:"سجمالی (؟)", nature:"انسانی",
+      place:"صحرا", event:"خونریزی", time:"حال", substance:"کانی", gem:"هفت‌جوش",
+      price:"متوسط‌القیمه", geoShape:"مجوف", direction:"جنوبی", color:"بنفش", temperament:"سرد و خشک", weight:"سنگین", scent:"غلات",
+      fruit:"دابوغ", illness:"سودا", taste:"گوناگون", animal:"قاطر", season:"بهار", bird:"جغ (باز شکاری) (؟)",
+      planet:"عطارد", zodiac:"سنبله", day:"شب چهارشنبه", dayNight:"نامشخص (؟)", tool:"منجنیق" }
+];
+
+const appearances = [
+    "شخصی باریش سیاه و انبوه، سفید چهره، اصیل، فاضل، نیک‌راه، بر سر علامت داغی یا نشانی دارد.",
+    "شخصی میانه‌بالا، درازگردن، کر، بدچشم، آبله‌رو، فاسق و خون‌ریز، حقه‌باز و خلاف‌کار.",
+    "شخصی بلندبالا، خردسر، میش‌چشم، بزرگ‌پای، هنرمند، خردمند، نیکورای.",
+    "شخصی میانه‌بالا و خوبرو، بلندبینی، پیوسته‌ابرو، گردن‌و (گردن‌کلفت)، صالح.",
+    "شخصی درازبالا، سبزرنگ، فربه، فاسق و غماز و کذاب و بی‌ادب.",
+    "شخصی درازبالا، باریک‌اندام، سر و پای نقاش یا مستوفی یا ریاضی‌دان.",
+    "شخصی کریه‌منظر، خردسر، بزرگ‌پای، تلخ‌سخن، بداصل، فاسق، حرامزاده، بدکار، فربه‌پیکر.",
+    "شخصی تلخ‌سخن، بزرگ‌سر، درازپا، کوتاه‌گردن، فربه‌تن، بااصل، موسم (نشانی) در چشم.",
+    "شخصی خردسر و پای میانه‌بالا، کوتاه‌گردن، فراخ‌شکم، کینه‌گیر، خصمت‌جوی.",
+    "شخصی بزرگ‌سر، خردپای، گندم‌گون، پیوسته‌ابرو، میانه‌بالا، میش‌چشم، سوداگر با صراف.",
+    "شخصی است خردپای، مرد نوجوان یا کوسه، سرخ‌وسفید، خوبروی، نیکوخوی، از اهل طرب.",
+    "شخصی خوبرو، سیاه‌ابرو و مو، خردپا، بلندبینی، عاقل و جوانمرد، صالح و نیکوروی.",
+    "شخصی سرخ‌روی، گربه‌چشم، کوسج، بدفعل، شیطان و راهزن.",
+    "شخصی خوش‌صورت، شریف یا سید، صالح، معتدل‌قامت، میش‌چشم، سفیدپوست.",
+    "شخصی درازپای، باریک‌اندام، خندان، میگون‌موی، چست و چالاک.",
+    "شخصی درازبالا، سبزرنگ، بزرگ‌سر، شکم و فربه‌اندام، یا منجم یا نقاش یا مثل این‌ها."
+];
+
+houses.forEach((h, i) => Object.assign(h, extras[i]));
+houses.forEach((h, i) => { h.appearance = appearances[i]; });
+
+/* موضوع ثابت هر خانه (بیت) از ۱ تا ۱۶ - مستقل از اینکه چه شکلی در آن بیفتد.
+   این را از همان دیتای مرجع می‌گیریم (title و attribution هر اندیس، موضوع
+   همان شماره خانه است، چون در صفحه‌ی مرجع هر شکل در همان خانه‌ی هم‌شماره‌اش
+   چیده شده بود). */
+const houseTopics = houses.map((h, i) => ({ n: i + 1, title: h.title, attribution: h.attribution }));
+
+/* ======================================================================
+   بخش ۲: نگاشت الگو (فرد/زوج هر ردیف) به شکل رملی
+   ====================================================================== */
+function codeOf(pattern){
+    return pattern.split('\n').map(r => r === '•' ? '1' : '2').join('');
+}
+const patternIndex = {};
+houses.forEach(h => { patternIndex[codeOf(h.pattern)] = h; });
+
+function rowsToPattern(rows){ // rows: [1|2,1|2,1|2,1|2] -> "•\n••\n•\n••"
+    return rows.map(r => r === 1 ? '•' : '••').join('\n');
+}
+function rowsToCode(rows){ return rows.join(''); }
+
+/* ======================================================================
+   بخش ۳: الگوریتم ضرب الرمل (امّهات → بنات → اخوات → شواهد → قاضی → قاضی الفصل)
+   ====================================================================== */
+function randRow(){ return Math.random() < 0.5 ? 1 : 2; } // 1 = یک نقطه (فرد) ، 2 = دو نقطه (زوج)
+
+function combine(a, b){ // قاعده‌ی جمع رمل: هم‌سان (فرد+فرد یا زوج+زوج) = زوج ، ناهم‌سان = فرد
+    return [0,1,2,3].map(i => a[i] === b[i] ? 2 : 1);
+}
+
+const elementByRow = ['آتش', 'باد', 'آب', 'خاک'];
+
+function randomMothers(){
+    const mothers = [[],[],[],[]];
+    for(let m = 0; m < 4; m++)
+        for(let r = 0; r < 4; r++)
+            mothers[m][r] = randRow();
+    return mothers;
+}
+
+// از چهار امّ (چه تصادفی، چه دستی) بقیه‌ی ۱۶ خانه را می‌سازد
+function buildAll16FromMothers(mothers){
+    // بنات: از چیدن افقی امّهات (ردیف r از هر چهار امّ)
+    const daughters = [[],[],[],[]];
+    for(let d = 0; d < 4; d++)
+        for(let m = 0; m < 4; m++)
+            daughters[d][m] = mothers[m][d];
+
+    // اخوات (نتایج): از ترکیب دوبه‌دوی امّهات و بنات
+    const nieces = [
+        combine(mothers[0], mothers[1]),
+        combine(mothers[2], mothers[3]),
+        combine(daughters[0], daughters[1]),
+        combine(daughters[2], daughters[3]),
+    ];
+
+    // شواهد: از ترکیب دوبه‌دوی اخوات
+    const witnesses = [
+        combine(nieces[0], nieces[1]),
+        combine(nieces[2], nieces[3]),
+    ];
+
+    // قاضی: از ترکیب دو شاهد
+    const judge = combine(witnesses[0], witnesses[1]);
+
+    // قاضی الفصل (خانه ۱۶): از ترکیب قاضی با امّ اول
+    const reconciler = combine(judge, mothers[0]);
+
+    return [...mothers, ...daughters, ...nieces, ...witnesses, judge, reconciler];
+}
+
+function performCast(){
+    return buildAll16FromMothers(randomMothers());
+}
+
+// قانون اعتبار: شکلِ خانه‌ی ۱۵ (قاضی) باید یکی از این هفت شکل باشد —
+// نصرة الخارج، قبض الخارج، اجتماع، عقله، قبض الداخل، نصرة الداخل، طریق —
+// چون این هفت شکل نقطه(ها)ی تکی دارند و قابل ردیابی‌اند. هر شکل دیگری در
+// خانه‌ی ۱۵ بیفتد، رمل باطل است.
+const validJudgeShapeNames = ['نصره الخارج', 'قبض الخارج', 'اجتماع', 'عقله', 'قبض الداخل', 'نصره الداخل', 'طریق'];
+
+function judgeShapeName(houseRows){
+    const shape = patternIndex[rowsToCode(houseRows)];
+    return shape ? shape.shape : null;
+}
+
+function isValidJudge(houseRows){
+    return validJudgeShapeNames.includes(judgeShapeName(houseRows));
+}
+
+function castValidRaml(){
+    const MAX_TRY = 5000;
+    for(let attempt = 1; attempt <= MAX_TRY; attempt++){
+        const all16 = performCast();
+        if(isValidJudge(all16[14])){
+            return { houses: all16, attempts: attempt };
+        }
+    }
+    // احتیاط: اگر با MAX_TRY بار هم نشد (عملاً غیرممکن است)، آخرین نتیجه را برمی‌گرداند
+    return { houses: performCast(), attempts: MAX_TRY, forced: true };
+}
+
+/* ======================================================================
+   بخش ۴: چیدمان بصری همان دایره‌ی ابجد (شیلد ۸ ستونه)
+   ====================================================================== */
+const layout = [
+    { row: 1, col: 1 }, { row: 1, col: 2 }, { row: 1, col: 3 }, { row: 1, col: 4 },
+    { row: 1, col: 5 }, { row: 1, col: 6 }, { row: 1, col: 7 }, { row: 1, col: 8 },
+    { row: 2, col: 2 }, { row: 2, col: 3 }, { row: 2, col: 6 }, { row: 2, col: 7 },
+    { row: 3, colStart: 2, colEnd: 4 }, { row: 3, colStart: 6, colEnd: 8 },
+    { row: 4, colStart: 2, colEnd: 8 },
+    { row: 5, colStart: 1, colEnd: 9 }
+];
+
+const shield = document.getElementById('shield');
+const shieldWrap = document.getElementById('shieldWrap');
+const modal = document.getElementById('m');
+const numBadgeEl = document.getElementById('numBadge');
+const attributionEl = document.getElementById('attribution');
+const houseTopicLineEl = document.getElementById('houseTopicLine');
+const sEl = document.getElementById('s');
+const tEl = document.getElementById('t');
+const attrsEl = document.getElementById('attrs');
+const longTextEl = document.getElementById('longText');
+const rowElementsEl = document.getElementById('rowElements');
+const zamirHokmBox = document.getElementById('zamirHokmBox');
+const zamirDotsEl = document.getElementById('zamirDots');
+const hokmDotsEl = document.getElementById('hokmDots');
+const traceBoxEl = document.getElementById('traceBox');
+
+const castBtn = document.getElementById('castBtn');
+const statusBadge = document.getElementById('statusBadge');
+const castingAnim = document.getElementById('castingAnim');
+const summaryPanel = document.getElementById('summaryPanel');
+const summaryNiyat = document.getElementById('summaryNiyat');
+const summaryHokm = document.getElementById('summaryHokm');
+const summaryLesan = document.getElementById('summaryLesan');
+const niyatInput = document.getElementById('niyatInput');
+
+const modeRandomBtn = document.getElementById('modeRandomBtn');
+const modeManualBtn = document.getElementById('modeManualBtn');
+const randomModeBox = document.getElementById('randomModeBox');
+const manualModeBox = document.getElementById('manualModeBox');
+const mothersGridEl = document.getElementById('mothersGrid');
+const manualCastBtn = document.getElementById('manualCastBtn');
+const statusBadgeManual = document.getElementById('statusBadgeManual');
+const niyatInputManual = document.getElementById('niyatInputManual');
+
+let currentCast = null; // { housesRows: [...16 arrays], niyat }
+
+/* ---------- تنظیم حالت (رمل می‌خواهم بزنم / رمل زده‌ام) ---------- */
+function setMode(mode){
+    if(mode === 'manual'){
+        modeManualBtn.classList.add('active');
+        modeRandomBtn.classList.remove('active');
+        manualModeBox.style.display = 'block';
+        randomModeBox.style.display = 'none';
+    } else {
+        modeRandomBtn.classList.add('active');
+        modeManualBtn.classList.remove('active');
+        randomModeBox.style.display = 'block';
+        manualModeBox.style.display = 'none';
+    }
+}
+modeRandomBtn.addEventListener('click', () => setMode('random'));
+modeManualBtn.addEventListener('click', () => setMode('manual'));
+
+/* ---------- ساخت کشویی انتخاب شکل برای هر یک از چهار امّ ---------- */
+const shapeByName = {};
+houses.forEach(h => { shapeByName[h.shape] = h; });
+
+function rowsFromShapeName(name){
+    return codeOf(shapeByName[name].pattern).split('').map(Number);
+}
+
+const motherSelectIds = ['motherSelect1', 'motherSelect2', 'motherSelect3', 'motherSelect4'];
+
+function setupMothersGrid(){
+    mothersGridEl.innerHTML = motherSelectIds.map((id, i) => `
+        <div class="mother-field">
+            <label for="${id}">امّ ${i + 1}</label>
+            <select id="${id}">
+                ${houses.map(h => `<option value="${h.shape}">${h.shape}</option>`).join('')}
+            </select>
+        </div>`).join('');
+}
+setupMothersGrid();
+
+/* ======================================================================
+   ردیابی نقطه‌های تکیِ هر شکل تا رسیدن به بنات/امّهات
+   ====================================================================== */
+function houseFamilyName(i){
+    if(i <= 3) return `امّ ${i + 1}`;
+    if(i <= 7) return `بنت ${i - 4 + 1}`;
+    if(i <= 11) return `اخت ${i - 8 + 1}`;
+    if(i <= 13) return `شاهد ${i - 12 + 1}`;
+    if(i === 14) return 'قاضی (خانه ۱۵)';
+    return 'لسان الامر (خانه ۱۶)';
+}
+
+// خانه‌ی 4..7: بنات (از چیدن ستونیِ امّهات) — 8..15: نتیجه‌ی ترکیب دو خانه‌ی هم‌ردیف
+function getParents(houseIndex){
+    if(houseIndex <= 3) return null; // امّ = ریشه، والد ندارد
+    if(houseIndex <= 7) return { type: 'transpose', d: houseIndex - 4 };
+    const combineMap = {
+        8: [0, 1], 9: [2, 3], 10: [4, 5], 11: [6, 7],
+        12: [8, 9], 13: [10, 11],
+        14: [12, 13],
+        15: [14, 0]
+    };
+    const [a, b] = combineMap[houseIndex];
+    return { type: 'combine', a, b };
+}
+
+// نقطه‌ی ردیف rowIndex از خانه‌ی houseIndex را تا امّ اصلی‌اش دنبال می‌کند
+function tracePoint(houseIndex, rowIndex, all16){
+    const chain = [{ house: houseIndex, row: rowIndex, val: all16[houseIndex][rowIndex] }];
+    let curH = houseIndex, curR = rowIndex;
+    while(curH > 3){
+        const p = getParents(curH);
+        if(p.type === 'transpose'){
+            const nextH = curR;   // شماره‌ی امّ = شماره‌ی ردیف فعلی
+            const nextR = p.d;    // ردیف جدید = شماره‌ی همین بنت
+            curH = nextH; curR = nextR;
+        } else {
+            const curVal = all16[chain[chain.length - 1].house][curR];
+            const valA = all16[p.a][curR];
+            const valB = all16[p.b][curR];
+            curH = (valA === valB) ? p.a : (valA === curVal ? p.a : p.b);
+        }
+        chain.push({ house: curH, row: curR, val: all16[curH][curR] });
+    }
+    return chain;
+}
+
+function renderTraceChainHTML(chain){
+    return chain.map(step => {
+        const dots = step.val === 1 ? '•' : '••';
+        return `<span class="trace-step">${houseFamilyName(step.house)}<br><small>${elementByRow[step.row]} ${dots}</small></span>`;
+    }).join('<span class="trace-arrow">←</span>');
+}
+
+function renderTraceSection(houseIndex, rows){
+    const singleRows = [];
+    rows.forEach((v, idx) => { if(v === 1) singleRows.push(idx); });
+
+    if(houseIndex <= 3 || singleRows.length === 0){
+        traceBoxEl.style.display = 'none';
+        traceBoxEl.innerHTML = '';
+        return;
+    }
+
+    const itemsHtml = singleRows.map((rowIdx, i) => {
+        const chain = tracePoint(houseIndex, rowIdx, currentCast.housesRows);
+        let roleLabel = `نقطه‌ی ${elementByRow[rowIdx]}`;
+        if(houseIndex === 14 && singleRows.length === 2){
+            roleLabel += (i === 0) ? ' (ضمیر)' : ' (حکم)';
+        }
+        return `<div class="trace-item">
+            <div class="trace-role">${roleLabel}</div>
+            <div class="trace-chain">${renderTraceChainHTML(chain)}</div>
+        </div>`;
+    }).join('');
+
+    traceBoxEl.innerHTML = `<p class="trace-title">ردیابی نقطه(های) تکی این شکل تا امّهات</p>${itemsHtml}`;
+    traceBoxEl.style.display = 'block';
+}
+
+function highlightBitNumbers(text){
+    const ordinals = "اول|دوم|سوم|چهارم|پنجم|ششم|هفتم|هشتم|نهم|دهم|یازدهم|دوازدهم|سیزدهم|چهاردهم|پانزدهم|شانزدهم";
+    const re = new RegExp(`(در\\s+(?:بیت\\s+)?)(${ordinals})`, 'g');
+    return text.replace(re, (m, pre, num) => `${pre}<span class="bit-num">${num}</span>`);
+}
+
+function shapeForHouse(houseIndex){ // houseIndex: 0..15
+    const rows = currentCast.housesRows[houseIndex];
+    const code = rowsToCode(rows);
+    return { shape: patternIndex[code], rows };
+}
+
+function openHouse(houseIndex){
+    const n = houseIndex + 1;
+    const { shape, rows } = shapeForHouse(houseIndex);
+    const topic = houseTopics[houseIndex];
+
+    numBadgeEl.textContent = `خانه شماره ${n}`;
+    attributionEl.textContent = `شکلِ افتاده: ${shape.shape}`;
+    houseTopicLineEl.textContent = `موضوع این خانه: ${topic.title} — ${topic.attribution}`;
+
+    sEl.textContent = rowsToPattern(rows);
+    tEl.textContent = shape.shape;
+
+    let attrsHtml =
+        `<span data-tag="element-${shape.element}">عنصر: ${shape.element}</span>` +
+        `<span data-tag="fortune-${shape.fortune}">${shape.fortune}</span>` +
+        `<span>عضو بدن: ${shape.organ}</span>`;
+    if(shape.boundary){ attrsHtml += `<span>${shape.boundary}</span>`; }
+    attrsEl.innerHTML = attrsHtml;
+
+    // عنصر هر ردیف (از بالا: آتش، باد، آب، خاک)
+    rowElementsEl.innerHTML = rows.map((r, idx) => `
+        <div class="row-el-item">
+            <div class="re-dot">${r === 1 ? '•' : '••'}</div>
+            <div class="re-label">${elementByRow[idx]}</div>
+        </div>`).join('');
+
+    // ضمیر/حکم فقط برای خانه‌ی ۱۵ (قاضی) و فقط وقتی دقیقاً دو نقطه‌ی تکی دارد
+    const singleRowsForZH = rows.map((v, i) => v === 1 ? i : -1).filter(i => i !== -1);
+    if(n === 15 && singleRowsForZH.length >= 2){
+        zamirHokmBox.style.display = 'flex';
+        const zamirRow = singleRowsForZH[0];
+        const hokmRow = singleRowsForZH[singleRowsForZH.length - 1];
+        zamirDotsEl.textContent = `${elementByRow[zamirRow]} •`;
+        hokmDotsEl.textContent = `${elementByRow[hokmRow]} •`;
+    } else {
+        zamirHokmBox.style.display = 'none';
+    }
+
+    renderTraceSection(houseIndex, rows);
+
+    // فقط پاراگراف مربوط به همین شماره خانه از متن این شکل
+    const paras = shape.longText.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+    const relevantPara = paras[houseIndex] || '(متنی برای این حالت ثبت نشده)';
+    longTextEl.innerHTML = `<p style="margin:0;">${highlightBitNumbers(relevantPara)}</p>`;
+
+    modal.style.display = 'block';
+    modal.scrollTop = 0;
+    document.querySelector('.box').scrollTop = 0;
+}
+
+function renderShield(){
+    shield.innerHTML = '';
+    for(let i = 0; i < 16; i++){
+        const { shape, rows } = shapeForHouse(i);
+        const topic = houseTopics[i];
+        const pos = layout[i];
+        const c = document.createElement('div');
+        c.className = 'card';
+        c.style.animationDelay = (i * 0.03) + 's';
+        c.dataset.element = shape.element;
+        c.dataset.fortune = shape.fortune;
+        if(i === 14) c.classList.add('judge-house');
+        c.innerHTML = `<span class="num">${i + 1}</span><h3>${shape.shape}</h3><pre>${rowsToPattern(rows)}</pre><div class="house-topic">${topic.title}</div>`;
+        c.onclick = () => openHouse(i);
+
+        if(pos.col !== undefined){
+            c.style.gridColumn = String(pos.col);
+        } else {
+            const span = pos.colEnd - pos.colStart;
+            c.classList.add('narrow');
+            c.style.gridColumn = `${pos.colStart} / ${pos.colEnd}`;
+            c.style.width = (100 / span).toFixed(4) + '%';
+        }
+        c.style.gridRow = String(pos.row);
+        shield.appendChild(c);
+    }
+    shieldWrap.classList.add('show');
+}
+
+function renderSummary(niyatText){
+    const judge = shapeForHouse(14);
+    const lesan = shapeForHouse(15);
+    const judgeParas = judge.shape.longText.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+    const lesanParas = lesan.shape.longText.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+
+    summaryNiyat.textContent = niyatText ? `نتیجه‌ی رمل برای نیت: «${niyatText}»` : 'نتیجه‌ی رمل';
+    summaryHokm.innerHTML = highlightBitNumbers(judgeParas[14] || '');
+    summaryLesan.innerHTML = highlightBitNumbers(lesanParas[15] || '');
+    summaryPanel.classList.add('show');
+}
+
+castBtn.addEventListener('click', () => {
+    castBtn.disabled = true;
+    castingAnim.classList.add('show');
+    statusBadge.style.display = 'none';
+    summaryPanel.classList.remove('show');
+    shieldWrap.classList.remove('show');
+
+    // کمی تاخیر مصنوعی برای حس «انداختن رمل» - سپس محاسبه واقعی
+    setTimeout(() => {
+        const result = castValidRaml();
+        currentCast = { housesRows: result.houses, niyat: niyatInput.value.trim() };
+
+        castingAnim.classList.remove('show');
+        castBtn.disabled = false;
+
+        statusBadge.style.display = 'inline-block';
+        if(result.forced){
+            statusBadge.textContent = 'هشدار: شرط خانه ۱۵ برقرار نشد، رمل را دوباره بیندازید';
+            statusBadge.className = 'status-badge pending';
+        } else {
+            statusBadge.textContent = `رمل معتبر ✅ (شرط خانه ۱۵ در تلاش ${result.attempts} برقرار شد)`;
+            statusBadge.className = 'status-badge';
+        }
+
+        renderShield();
+        renderSummary(currentCast.niyat);
+        summaryPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 900);
+});
+
+manualCastBtn.addEventListener('click', () => {
+    const mothers = motherSelectIds.map(id => rowsFromShapeName(document.getElementById(id).value));
+    const all16 = buildAll16FromMothers(mothers);
+    currentCast = { housesRows: all16, niyat: niyatInputManual.value.trim() };
+
+    statusBadgeManual.style.display = 'inline-block';
+    if(isValidJudge(all16[14])){
+        statusBadgeManual.textContent = 'رمل معتبر ✅ (شکل خانه‌ی ۱۵ صحیح است)';
+        statusBadgeManual.className = 'status-badge';
+    } else {
+        statusBadgeManual.textContent = `رمل باطل ⚠️ — شکل خانه‌ی ۱۵ «${judgeShapeName(all16[14])}» است و باید یکی از هفت شکل معتبر (نصرة‌الخارج، قبض‌الخارج، اجتماع، عقله، قبض‌الداخل، نصرة‌الداخل، طریق) باشد. لازم است دوباره رمل بزنید.`;
+        statusBadgeManual.className = 'status-badge pending';
+    }
+
+    summaryPanel.classList.remove('show');
+    shieldWrap.classList.remove('show');
+    renderShield();
+    renderSummary(currentCast.niyat);
+    summaryPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+modal.onclick = e => { if(e.target === modal) modal.style.display = 'none'; };
+
+window.onload = function(){
+    document.body.style.opacity = 1;
+    document.querySelector('.loader').style.display = 'none';
+};
+</script>
+</body>
+</html>
