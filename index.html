@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نیت‌رمل | رمل انداختن آنلاین بر اساس دایره ابجد - محمود خاوری</title>
+<title>نیت‌رمل | رمل انداختن آنلاین بر اساس دایره ابدح - محمود خاوری</title>
 
-<meta name="description" content="نیت‌رمل: صفحه‌ی آنلاین انداختن رمل بر اساس نیت شما، با محاسبه‌ی امّهات و بنات و اخوات و شواهد و قاضی، و تفسیر هر خانه دقیقاً بر پایه‌ی دایره‌ی کامل ابجد. تدوین: محمود خاوری - گروه آموزشی راقیون.">
+<meta name="description" content="نیت‌رمل: صفحه‌ی آنلاین انداختن رمل بر اساس نیت شما، با محاسبه‌ی امّهات و بنات و اخوات و شواهد و قاضی، و تفسیر هر خانه دقیقاً بر پایه‌ی دایره‌ی کامل ابدح . تدوین: محمود خاوری - گروه آموزشی راقیون.">
 <meta name="robots" content="index, follow">
 <meta name="author" content="محمود خاوری - گروه آموزشی راقیون">
 
@@ -83,6 +83,29 @@
         background:#f9fbfd;
     }
     .niyat-panel textarea:focus{ outline:2px solid var(--brand); }
+
+    .bismillah-box{
+        background:#fff;
+        border-radius:14px;
+        box-shadow:0 2px 10px #0002;
+        border-right:4px solid var(--brand);
+        padding:16px 18px;
+        margin-bottom:20px;
+        text-align:center;
+    }
+    .bismillah-box .bism-line{
+        font-size:15px;
+        font-weight:bold;
+        color:var(--brand-dark);
+        margin:0 0 10px;
+    }
+    .bismillah-box .ayah-line{
+        font-size:15px;
+        line-height:2.1;
+        color:#333;
+        margin:0;
+        direction:rtl;
+    }
 
     .mode-row{
         display:flex;
@@ -230,6 +253,11 @@
         margin-bottom:3px;
     }
     .summary-block .sb-text{ font-size:13.5px; line-height:1.8; }
+    .summary-block .sb-label.matlub-label{
+        color:#c0392b;
+        font-size:13.5px;
+        font-weight:800;
+    }
 
     /* ---------- چیدمان سپری (شیلد) ۱۶ خانه ---------- */
     .shield-wrap{ display:none; position:relative; }
@@ -553,6 +581,46 @@
     .trace-item.zh-hokm .trace-step{ border-color:#f5cba7; }
     .trace-item.zh-hokm .trace-arrow{ color:#e67e22; }
 
+    .matlub-box{
+        display:none;
+        margin-top:16px;
+        background:#fdf2e9;
+        border:1px solid #f5cba7;
+        border-radius:10px;
+        padding:12px 14px;
+    }
+    .matlub-title{
+        margin:0 0 8px;
+        font-size:15px;
+        font-weight:800;
+        color:#c0392b;
+        letter-spacing:.2px;
+    }
+    .matlub-row{
+        display:flex;
+        align-items:center;
+        flex-wrap:wrap;
+        gap:8px;
+        font-size:13px;
+    }
+    .matlub-arrival{
+        display:inline-block;
+        background:#fff;
+        border:1px solid #f5cba7;
+        border-radius:8px;
+        padding:4px 10px;
+    }
+    .matlub-arrow{ color:#e67e22; font-weight:bold; }
+    .matlub-result{
+        display:inline-block;
+        background:#e67e22;
+        color:#fff;
+        border-radius:8px;
+        padding:4px 12px;
+        font-weight:bold;
+    }
+    .matlub-none{ color:#8a97a6; font-size:12px; }
+
     .bit-num{
         color:var(--brand);
         background:#eef6fc;
@@ -610,10 +678,15 @@
 
 <header>
     <h1>نیت‌رمل</h1>
-    <p>رمل آنلاین بر پایه‌ی دایره‌ی کامل ابجد</p>
+    <p>رمل آنلاین بر پایه‌ی دایره‌ی کامل ابدح</p>
 </header>
 
 <main>
+
+    <div class="bismillah-box">
+        <p class="bism-line">بسم الله الرحمن الرحیم</p>
+        <p class="ayah-line">وَ عِنْدَهُ مَفاتِحُ الْغَیْبِ لا یَعْلَمُها إِلّا هُوَ وَ یَعْلَمُ ما فِی الْبَرِّ وَ الْبَحْرِ وَ ما تَسْقُطُ مِنْ وَرَقَةٍ إِلّا یَعْلَمُها وَ لا حَبَّةٍ فی ظُلُماتِ الْأَرْضِ وَ لا رَطْبٍ وَ لا یابِسٍ إِلّا فی کِتابٍ مُبینٍ</p>
+    </div>
 
     <div class="niyat-panel">
         <label>روش انداختن رمل را انتخاب کنید:</label>
@@ -654,6 +727,10 @@
             <span class="sb-label">لسان الامر — خانه ۱۶ (نتیجه‌ی کلی)</span>
             <span class="sb-text" id="summaryLesan"></span>
         </div>
+        <div class="summary-block" id="summaryMatlubBlock" style="display:none;">
+            <span class="sb-label matlub-label">مطلوبِ نقطه‌ی حکم</span>
+            <span class="sb-text" id="summaryMatlub"></span>
+        </div>
     </div>
 
     <p class="shield-section-title"><span class="zahir-tag">🔷 ظاهر رمل</span></p>
@@ -663,7 +740,7 @@
     </div>
 
     <p class="shield-section-title"><span class="batin-tag">🔮 باطن رمل</span></p>
-    <p class="batin-note">باطن، از ضرب هر خانه‌ی ظاهر با همان خانه از دایره‌ی ابجد (از لحیان تا جماعت) به دست می‌آید.</p>
+    <p class="batin-note">باطن، از ضرب هر خانه‌ی ظاهر با همان خانه از دایره‌ی ابدح (از لحیان تا جماعت) به دست می‌آید.</p>
     <div class="shield-wrap" id="batinShieldWrap">
         <div class="shield" id="batinShield"></div>
     </div>
@@ -707,6 +784,8 @@
 
             <div class="trace-box" id="traceBox"></div>
 
+            <div class="matlub-box" id="matlubBox"></div>
+
             <hr>
             <div class="long-text" id="longText"></div>
         </div>
@@ -714,12 +793,12 @@
 </main>
 
 <footer>
-    <p style="margin:0;">&copy; 2025 نیت‌رمل — بر پایه‌ی دایره‌ی ابجد، تدوین: <strong>محمود خاوری</strong> (گروه آموزشی راقیون).</p>
+    <p style="margin:0;">&copy; 2025 نیت‌رمل — بر پایه‌ی دایره‌ی ابدح، تدوین: <strong>محمود خاوری</strong> (گروه آموزشی راقیون).</p>
 </footer>
 
 <script>
 /* ======================================================================
-   بخش ۱: دیتای مرجع ۱۶ شکل رملی (عیناً از صفحه‌ی «دایره ابجد» گرفته شده)
+   بخش ۱: دیتای مرجع ۱۶ شکل رملی (عیناً از صفحه‌ی «دایره ابدح» گرفته شده)
    ====================================================================== */
 const houses = [
     { shape:"لحیان", pattern:"•\n••\n••\n••",
@@ -1510,8 +1589,8 @@ function isValidJudge(houseRows){
 }
 
 /* ======================================================================
-   باطن رمل: ضربِ هر خانه‌ی ظاهر با همان خانه از دایره‌ی ثابت ابجد
-   (دایره‌ی ابجد یعنی همان ترتیب ثابت ۱۶ شکل، از لحیان تا جماعت)
+   باطن رمل: ضربِ هر خانه‌ی ظاهر با همان خانه از دایره‌ی ثابت ابدح
+   (دایره‌ی ابدح یعنی همان ترتیب ثابت ۱۶ شکل، از لحیان تا جماعت)
    ====================================================================== */
 const abjadCircleRows = houses.map(h => codeOf(h.pattern).split('').map(Number));
 
@@ -1520,7 +1599,7 @@ function computeBatin(zahirRows){
 }
 
 /* ======================================================================
-   بخش ۴: چیدمان بصری همان دایره‌ی ابجد (شیلد ۸ ستونه)
+   بخش ۴: چیدمان بصری همان دایره‌ی ابدح (شیلد ۸ ستونه)
    ====================================================================== */
 const layout = [
     { row: 1, col: 1 }, { row: 1, col: 2 }, { row: 1, col: 3 }, { row: 1, col: 4 },
@@ -1551,6 +1630,7 @@ const zamirHokmBox = document.getElementById('zamirHokmBox');
 const zamirDotsEl = document.getElementById('zamirDots');
 const hokmDotsEl = document.getElementById('hokmDots');
 const traceBoxEl = document.getElementById('traceBox');
+const matlubBoxEl = document.getElementById('matlubBox');
 
 const castBtn = document.getElementById('castBtn');
 const statusBadge = document.getElementById('statusBadge');
@@ -1559,6 +1639,8 @@ const summaryPanel = document.getElementById('summaryPanel');
 const summaryNiyat = document.getElementById('summaryNiyat');
 const summaryHokm = document.getElementById('summaryHokm');
 const summaryLesan = document.getElementById('summaryLesan');
+const summaryMatlubBlock = document.getElementById('summaryMatlubBlock');
+const summaryMatlub = document.getElementById('summaryMatlub');
 const niyatInput = document.getElementById('niyatInput');
 
 const modeRandomBtn = document.getElementById('modeRandomBtn');
@@ -1657,6 +1739,45 @@ function tracePoint(houseIndex, rowIndex, all16){
     return chain;
 }
 
+/* ======================================================================
+   محاسبه‌ی «مطلوب»: نقطه‌ی حکم پس از ردیابی به کدام عنصر/خانه می‌رسد،
+   و شکلِ بعدیِ آن در توالیِ همان عنصر، مطلوب آن است.
+   ====================================================================== */
+const matlubCycles = {
+    'آتش': ['لحیان', 'نصره الخارج', 'قبض الخارج', 'عتبه الخارج', 'عقله', 'فرح', 'نقی الخد', 'طریق'],
+    'باد':  ['حمره', 'نصره الخارج', 'اجتماع', 'عتبه الخارج', 'قبض الداخل', 'فرح', 'عتبه الداخل', 'طریق'],
+    'آب':   ['بیاض', 'قبض الخارج', 'اجتماع', 'عتبه الخارج', 'نصره الداخل', 'نقی الخد', 'عتبه الداخل', 'طریق'],
+    'خاک':  ['انکیس', 'عقله', 'قبض الداخل', 'فرح', 'نصره الداخل', 'نقی الخد', 'عتبه الداخل', 'طریق']
+};
+
+// شکلِ افتاده در خانه‌ی houseIdx (بر پایه‌ی همان ۱۶ خانه‌ی ظاهر رمل جاری)
+function shapeNameAtHouse(houseIdx, all16){
+    const code = rowsToCode(all16[houseIdx]);
+    const s = patternIndex[code];
+    return s ? s.shape : null;
+}
+
+// مطلوبِ یک شکل در توالیِ عنصر داده‌شده (شکلِ بعدی در آن توالی)
+function getMatlub(element, shapeName){
+    const cycle = matlubCycles[element];
+    if(!cycle) return null;
+    const idx = cycle.indexOf(shapeName);
+    if(idx === -1) return null;
+    return cycle[(idx + 1) % cycle.length];
+}
+
+// بر پایه‌ی آخرین گامِ زنجیره‌ی ردیابیِ نقطه‌ی حکم (خانه‌ای که نهایتاً به آن می‌رسد)
+// عنصرِ آن گام و شکلِ همان خانه را می‌گیرد و مطلوب را برمی‌گرداند
+function computeMatlubFromChain(chain, all16){
+    if(!chain || !chain.length) return null;
+    const last = chain[chain.length - 1];
+    const element = elementByRow[last.row];
+    const shapeName = shapeNameAtHouse(last.house, all16);
+    if(!shapeName) return null;
+    const matlub = getMatlub(element, shapeName);
+    return { house: last.house, row: last.row, element, shapeName, matlub };
+}
+
 function renderTraceChainHTML(chain){
     return chain.map(step => {
         const dots = step.val === 1 ? '•' : '••';
@@ -1688,6 +1809,33 @@ function renderTraceSection(houseIndex, rows, zamirRow, hokmRow){
 
     traceBoxEl.innerHTML = `<p class="trace-title">ردیابی نقطه(های) تکی این شکل تا امّهات/بنات</p>${itemsHtml}`;
     traceBoxEl.style.display = 'block';
+}
+
+// «مطلوب»: فقط برای خانه‌ی ۱۵ی ظاهر، وقتی نقطه‌ی حکم مشخص است معنا دارد
+function renderMatlubSection(hokmRow){
+    if(hokmRow === -1){
+        matlubBoxEl.style.display = 'none';
+        matlubBoxEl.innerHTML = '';
+        return;
+    }
+    const hokmChain = tracePoint(14, hokmRow, currentCast.housesRows);
+    const info = computeMatlubFromChain(hokmChain, currentCast.housesRows);
+
+    if(!info || !info.matlub){
+        matlubBoxEl.innerHTML = `<p class="matlub-title">مطلوبِ نقطه‌ی حکم</p>
+            <p class="matlub-none">نقطه‌ی حکم به شکلی رسید («${info ? info.shapeName : '؟'}») که در توالیِ عنصر ${info ? info.element : ''} تعریف نشده، پس مطلوبی برایش محاسبه نمی‌شود.</p>`;
+        matlubBoxEl.style.display = 'block';
+        return;
+    }
+
+    matlubBoxEl.innerHTML = `
+        <p class="matlub-title">مطلوبِ نقطه‌ی حکم</p>
+        <div class="matlub-row">
+            <span class="matlub-arrival">${houseFamilyName(info.house)} — ${info.element} — ${info.shapeName}</span>
+            <span class="matlub-arrow">←</span>
+            <span class="matlub-result">${info.matlub}</span>
+        </div>`;
+    matlubBoxEl.style.display = 'block';
 }
 
 // خط رابطِ رنگی بین نقطه‌ی ضمیر (آبی) و نقطه‌ی حکم (قرمز) در خانه‌ی ۱۵
@@ -1762,7 +1910,7 @@ function openHouse(houseIndex, isBatin){
     attrsEl.innerHTML = attrsHtml;
 
     // ضمیر/حکم و ردیابیِ نقطه‌های تکی فقط برای خانه‌ی ۱۵ی ظاهر معنا دارد
-    // (باطن از ترکیب جداگانه‌ی هر خانه با دایره‌ی ثابت ابجد ساخته می‌شود و درخت ترکیبیِ
+    // (باطن از ترکیب جداگانه‌ی هر خانه با دایره‌ی ثابت ابدح ساخته می‌شود و درخت ترکیبیِ
     // امّهات/بنات ندارد، پس زنجیره‌ی ردیابی برایش تعریف‌شده نیست)
     const singleRowsForZH = rows.map((v, i) => v === 1 ? i : -1).filter(i => i !== -1);
     const zamirRow = (!isBatin && n === 15 && singleRowsForZH.length >= 2) ? singleRowsForZH[0] : -1;
@@ -1794,8 +1942,11 @@ function openHouse(houseIndex, isBatin){
     if(isBatin){
         traceBoxEl.style.display = 'none';
         traceBoxEl.innerHTML = '';
+        matlubBoxEl.style.display = 'none';
+        matlubBoxEl.innerHTML = '';
     } else {
         renderTraceSection(houseIndex, rows, zamirRow, hokmRow);
+        renderMatlubSection(hokmRow);
     }
 
     // فقط پاراگراف مربوط به همین شماره خانه از متن این شکل
@@ -1930,6 +2081,23 @@ function renderSummary(niyatText){
     summaryNiyat.textContent = niyatText ? `نتیجه‌ی رمل برای نیت: «${niyatText}»` : 'نتیجه‌ی رمل';
     summaryHokm.innerHTML = highlightBitNumbers(judgeParas[14] || '');
     summaryLesan.innerHTML = highlightBitNumbers(lesanParas[15] || '');
+
+    const rows15 = currentCast.housesRows[14];
+    const singles15 = rows15.map((v, i) => v === 1 ? i : -1).filter(i => i !== -1);
+    if(singles15.length >= 2){
+        const hokmRow15 = singles15[singles15.length - 1];
+        const hokmChain15 = tracePoint(14, hokmRow15, currentCast.housesRows);
+        const info = computeMatlubFromChain(hokmChain15, currentCast.housesRows);
+        if(info && info.matlub){
+            summaryMatlub.textContent = `نقطه‌ی حکم به «${houseFamilyName(info.house)}» (عنصر ${info.element} — شکل ${info.shapeName}) رسید؛ مطلوب آن «${info.matlub}» است.`;
+            summaryMatlubBlock.style.display = 'block';
+        } else {
+            summaryMatlubBlock.style.display = 'none';
+        }
+    } else {
+        summaryMatlubBlock.style.display = 'none';
+    }
+
     summaryPanel.classList.add('show');
 }
 
