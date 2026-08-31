@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>نیت‌رمل | رمل انداختن آنلاین بر اساس دایره ابدح - محمود خاوری</title>
 
-<meta name="description" content="نیت‌رمل: صفحه‌ی آنلاین انداختن رمل بر اساس نیت شما، با محاسبه‌ی امّهات و بنات و اخوات و شواهد و قاضی، و تفسیر هر خانه دقیقاً بر پایه‌ی دایره‌ی کامل ابدح . تدوین: محمود خاوری - گروه آموزشی راقیون.">
+<meta name="description" content="نیت‌رمل: صفحه‌ی آنلاین انداختن رمل بر اساس نیت شما، با محاسبه‌ی امّهات و بنات و اخوات و شواهد و قاضی، و تفسیر هر خانه دقیقاً بر پایه‌ی دایره‌ی کامل ابدح. تدوین: محمود خاوری - گروه آموزشی راقیون.">
 <meta name="robots" content="index, follow">
 <meta name="author" content="محمود خاوری - گروه آموزشی راقیون">
 
@@ -1914,7 +1914,10 @@ function openHouse(houseIndex, isBatin){
     // امّهات/بنات ندارد، پس زنجیره‌ی ردیابی برایش تعریف‌شده نیست)
     const singleRowsForZH = rows.map((v, i) => v === 1 ? i : -1).filter(i => i !== -1);
     const zamirRow = (!isBatin && n === 15 && singleRowsForZH.length >= 2) ? singleRowsForZH[0] : -1;
-    const hokmRow = (!isBatin && n === 15 && singleRowsForZH.length >= 2) ? singleRowsForZH[singleRowsForZH.length - 1] : -1;
+    // حکم، نقطه‌ی تکِ بعدی بلافاصله پس از ضمیر است (نه لزوماً آخرین نقطه‌ی تک شکل)
+    // در شش شکلِ معتبرِ دیگر فقط دو نقطه‌ی تک وجود دارد پس تفاوتی نمی‌کند،
+    // اما در «طریق» که هر چهار عنصر تک هستند همین تفاوت است: ضمیر=آتش، حکم=باد
+    const hokmRow = (!isBatin && n === 15 && singleRowsForZH.length >= 2) ? singleRowsForZH[1] : -1;
 
     // عنصر هر ردیف (از بالا: آتش، باد، آب، خاک) — نقاط ضمیر/حکمِ خانه‌ی ۱۵ رنگی مشخص می‌شوند
     rowElementsEl.innerHTML = rows.map((r, idx) => {
@@ -1999,7 +2002,8 @@ function drawShieldTraceLines(){
     if(singles.length < 2) return;
 
     const zamirRow = singles[0];
-    const hokmRow = singles[singles.length - 1];
+    // مشابهِ منطقِ openHouse: حکم، نقطه‌ی تکِ بلافاصله بعد از ضمیر است، نه آخرین نقطه‌ی تک
+    const hokmRow = singles[1];
     const zamirChain = tracePoint(14, zamirRow, currentCast.housesRows);
     const hokmChain = tracePoint(14, hokmRow, currentCast.housesRows);
 
@@ -2085,7 +2089,7 @@ function renderSummary(niyatText){
     const rows15 = currentCast.housesRows[14];
     const singles15 = rows15.map((v, i) => v === 1 ? i : -1).filter(i => i !== -1);
     if(singles15.length >= 2){
-        const hokmRow15 = singles15[singles15.length - 1];
+        const hokmRow15 = singles15[1];
         const hokmChain15 = tracePoint(14, hokmRow15, currentCast.housesRows);
         const info = computeMatlubFromChain(hokmChain15, currentCast.housesRows);
         if(info && info.matlub){
