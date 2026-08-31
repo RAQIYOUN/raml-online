@@ -9,8 +9,19 @@
 <meta name="robots" content="index, follow">
 <meta name="author" content="محمود خاوری - گروه آموزشی راقیون">
 
-<link href="https://fonts.googleapis.com/css2?family=Vazir&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Vazir&display=swap" rel="stylesheet">
 <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+<!-- وب‌اپلیکیشن قابل‌نصب (PWA) -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3498db">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="نیت‌رمل">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <style>
     :root{
         --brand:#3498db;
@@ -85,27 +96,48 @@
     .niyat-panel textarea:focus{ outline:2px solid var(--brand); }
 
     .bismillah-box{
-        background:#fff;
-        border-radius:14px;
-        box-shadow:0 2px 10px #0002;
-        border-right:4px solid var(--brand);
-        padding:16px 18px;
+        position:relative;
+        background:linear-gradient(160deg,#0f6e5f 0%,#0c5648 55%,#0a4a3e 100%);
+        border-radius:16px;
+        box-shadow:0 4px 18px #0f6e5f40;
+        border:1px solid #cfa54a;
+        padding:22px 20px 20px;
         margin-bottom:20px;
         text-align:center;
+        overflow:hidden;
     }
+    .bismillah-box::before,
+    .bismillah-box::after{
+        content:'✦';
+        position:absolute;
+        top:10px;
+        font-size:12px;
+        color:#d8b46a;
+        opacity:.85;
+    }
+    .bismillah-box::before{ right:14px; }
+    .bismillah-box::after{ left:14px; }
     .bismillah-box .bism-line{
-        font-size:15px;
-        font-weight:bold;
-        color:var(--brand-dark);
-        margin:0 0 10px;
+        font-family:'Amiri','Vazir',serif;
+        font-size:20px;
+        font-weight:700;
+        color:#f1d38a;
+        margin:0 0 12px;
+        letter-spacing:.3px;
+        text-shadow:0 1px 3px #0006;
     }
     .bismillah-box .ayah-line{
-        font-size:15px;
-        line-height:2.1;
-        color:#333;
+        font-family:'Amiri','Vazir',serif;
+        font-size:18px;
+        line-height:2.35;
+        color:#fbf3dd;
         margin:0;
         direction:rtl;
+        position:relative;
+        z-index:1;
     }
+    .bismillah-box .ayah-line::before{ content:'﴿ '; color:#d8b46a; }
+    .bismillah-box .ayah-line::after{ content:' ﴾'; color:#d8b46a; }
 
     .mode-row{
         display:flex;
@@ -1775,9 +1807,12 @@ function shapeNameAtHouse(houseIdx, all16){
 }
 
 // مطلوبِ یک شکل در توالیِ عنصر داده‌شده (شکلِ بعدی در آن توالی)
+// اگر خودِ نقطه‌ی حکم به «طریق» برسد، چون طریق شکلی منقلب است و آخرِ توالی است،
+// از آن مطلوبی گرفته نمی‌شود (به شکلِ اول توالی هم برنمی‌گردد)
 function getMatlub(element, shapeName){
     const cycle = matlubCycles[element];
     if(!cycle) return null;
+    if(shapeName === 'طریق') return null;
     const idx = cycle.indexOf(shapeName);
     if(idx === -1) return null;
     return cycle[(idx + 1) % cycle.length];
@@ -1809,10 +1844,10 @@ function formatHouseList(houseNumbers){
     return houseNumbers.map(n => `خانه‌ی ${n} (${houseFamilyName(n - 1)})`).join('، ');
 }
 
-// خروجیِ متنیِ بخش مطلوب: یا هشدارِ «طریق منقلب است»، یا فهرست خانه‌های ظاهر/باطن
+// خروجیِ متنیِ بخش مطلوب: یا هشدارِ «وقتی مطلوب طریق باشد حکم منقلب است»، یا فهرست خانه‌های ظاهر/باطن
 function matlubExtraHtml(matlubShape){
     if(matlubShape === 'طریق'){
-        return `<p class="matlub-warn">از طریق نمی‌توان مطلوب گرفت، چون طریق شکلی منقلب است.</p>`;
+        return `<p class="matlub-warn">وقتی مطلوبِ حکم طریق باشد، حکم منقلب است.</p>`;
     }
     const zahirHouses = findHousesWithShape(matlubShape, currentCast.housesRows);
     const batinHouses = findHousesWithShape(matlubShape, currentCast.batinRows);
@@ -1863,8 +1898,12 @@ function renderMatlubSection(hokmRow){
     const info = computeMatlubFromChain(hokmChain, currentCast.housesRows);
 
     if(!info || !info.matlub){
-        matlubBoxEl.innerHTML = `<p class="matlub-title">مطلوبِ نقطه‌ی حکم</p>
-            <p class="matlub-none">نقطه‌ی حکم به شکلی رسید («${info ? info.shapeName : '؟'}») که در توالیِ عنصر ${info ? info.element : ''} تعریف نشده، پس مطلوبی برایش محاسبه نمی‌شود.</p>`;
+        const isTariq = info && info.shapeName === 'طریق';
+        matlubBoxEl.innerHTML = isTariq
+            ? `<p class="matlub-title">مطلوبِ نقطه‌ی حکم</p>
+               <p class="matlub-warn">نقطه‌ی حکم به «طریق» رسید؛ طریق شکلی منقلب است و از این شکل نمی‌توان مطلوب گرفت.</p>`
+            : `<p class="matlub-title">مطلوبِ نقطه‌ی حکم</p>
+               <p class="matlub-none">نقطه‌ی حکم به شکلی رسید («${info ? info.shapeName : '؟'}») که در توالیِ عنصر ${info ? info.element : ''} تعریف نشده، پس مطلوبی برایش محاسبه نمی‌شود.</p>`;
         matlubBoxEl.style.display = 'block';
         return;
     }
@@ -2036,6 +2075,9 @@ function renderShield(){
 }
 
 // خط‌های رنگیِ ضمیر (آبی) و حکم (نارنجی) روی کل شیلد ظاهر، از خانه‌ی ۱۵ تا امّ مبدأ
+// این خط‌ها دیگر از روی متنِ خانه‌ها رد نمی‌شوند: از کنارِ هر خانه بیرون می‌آیند،
+// از فاصله‌ی خالیِ میان ردیف‌ها (گَپ بین خانه‌ها) عبور می‌کنند و از کنارِ خانه‌ی بعدی
+// وارد می‌شوند؛ یک نقطه‌ی رنگی کنارِ هر خانه دقیقاً ارتفاعِ همان ردیف را نشان می‌دهد.
 function drawShieldTraceLines(){
     shieldTraceSvg.innerHTML = '';
     if(!currentCast) return;
@@ -2054,33 +2096,72 @@ function drawShieldTraceLines(){
         if(wrapRect.width === 0) return;
         shieldTraceSvg.setAttribute('viewBox', `0 0 ${wrapRect.width} ${wrapRect.height}`);
 
-        function anchorFor(houseIdx, rowIdx){
+        function anchorOf(houseIdx, rowIdx){
             const card = shield.querySelector(`[data-house-index="${houseIdx}"]`);
             if(!card) return null;
             const r = card.getBoundingClientRect();
-            const yFrac = 0.34 + (rowIdx / 3) * 0.4; // موقعیت تقریبی همان ردیفِ نقطه داخل کارت
+            const yFrac = 0.34 + (rowIdx / 3) * 0.4; // ارتفاعِ تقریبیِ همان ردیفِ نقطه داخل کارت
             return {
-                x: r.left - wrapRect.left + r.width / 2,
-                y: r.top - wrapRect.top + r.height * yFrac
+                top: r.top - wrapRect.top,
+                bottom: r.bottom - wrapRect.top,
+                left: r.left - wrapRect.left,
+                right: r.right - wrapRect.left,
+                cx: r.left - wrapRect.left + r.width / 2,
+                py: r.top - wrapRect.top + r.height * yFrac,
+                row: layout[houseIdx].row
             };
         }
 
-        function pathFor(chain){
-            const pts = chain.map(step => anchorFor(step.house, step.row)).filter(Boolean);
-            if(pts.length < 2) return { d: '', pts };
-            return { d: 'M ' + pts.map(p => `${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' L '), pts };
+        // مسیرِ یک «جهش» بین دو خانه: از کنارِ خانه‌ی مبدأ (نه از روی متنِ آن) بیرون می‌رود،
+        // از فاصله‌ی خالیِ بینِ ردیف‌ها می‌گذرد و از کنارِ خانه‌ی مقصد وارد می‌شود
+        function hopPoints(a, b){
+            if(!a || !b) return [];
+            const goingUp = b.row < a.row;
+            const goingDown = b.row > a.row;
+            const sideA = (b.cx >= a.cx) ? 'right' : 'left';
+            const sideB = (a.cx <= b.cx) ? 'left' : 'right';
+            const markerA = { x: sideA === 'right' ? a.right : a.left, y: a.py };
+            const markerB = { x: sideB === 'left' ? b.left : b.right, y: b.py };
+
+            let cornerA, cornerB;
+            if(goingUp){
+                cornerA = { x: markerA.x, y: a.top };
+                cornerB = { x: markerB.x, y: b.bottom };
+            } else if(goingDown){
+                cornerA = { x: markerA.x, y: a.bottom };
+                cornerB = { x: markerB.x, y: b.top };
+            } else {
+                const laneY = Math.min(a.top, b.top) - 12;
+                cornerA = { x: markerA.x, y: laneY };
+                cornerB = { x: markerB.x, y: laneY };
+            }
+            return [markerA, cornerA, { x: cornerA.x, y: cornerB.y }, cornerB, markerB];
         }
 
-        const zamir = pathFor(zamirChain);
-        const hokm = pathFor(hokmChain);
+        function fullPath(chain){
+            const anchors = chain.map(step => anchorOf(step.house, step.row));
+            if(anchors.length < 2 || anchors.some(a => !a)) return { d: '', dots: [] };
+            let pts = [];
+            const dots = [];
+            for(let i = 0; i < anchors.length - 1; i++){
+                const seg = hopPoints(anchors[i], anchors[i + 1]);
+                pts = pts.concat(seg);
+                dots.push(seg[0], seg[seg.length - 1]);
+            }
+            const d = 'M ' + pts.map(p => `${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' L ');
+            return { d, dots };
+        }
+
+        const zamir = fullPath(zamirChain);
+        const hokm = fullPath(hokmChain);
 
         let svgHtml = '';
-        if(zamir.d) svgHtml += `<path d="${zamir.d}" fill="none" stroke="#2980b9" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
-        if(hokm.d) svgHtml += `<path d="${hokm.d}" fill="none" stroke="#e67e22" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
+        if(zamir.d) svgHtml += `<path d="${zamir.d}" fill="none" stroke="#2980b9" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+        if(hokm.d) svgHtml += `<path d="${hokm.d}" fill="none" stroke="#e67e22" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
 
-        [{ pts: zamir.pts, color: '#2980b9' }, { pts: hokm.pts, color: '#e67e22' }].forEach(({ pts, color }) => {
-            pts.forEach(p => {
-                svgHtml += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.5" fill="${color}"/>`;
+        [{ dots: zamir.dots, color: '#2980b9' }, { dots: hokm.dots, color: '#e67e22' }].forEach(({ dots, color }) => {
+            dots.forEach(p => {
+                svgHtml += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.2" fill="${color}"/>`;
             });
         });
 
@@ -2136,6 +2217,9 @@ function renderSummary(niyatText){
         const info = computeMatlubFromChain(hokmChain15, currentCast.housesRows);
         if(info && info.matlub){
             summaryMatlub.innerHTML = `نقطه‌ی حکم به «${houseFamilyName(info.house)}» (عنصر ${info.element} — شکل ${info.shapeName}) رسید؛ مطلوب آن <span class="matlub-emph">«${info.matlub}»</span> است.${matlubExtraHtml(info.matlub)}`;
+            summaryMatlubBlock.style.display = 'block';
+        } else if(info && info.shapeName === 'طریق'){
+            summaryMatlub.innerHTML = `نقطه‌ی حکم به «${houseFamilyName(info.house)}» (عنصر ${info.element} — شکل طریق) رسید؛ طریق شکلی منقلب است و از این شکل نمی‌توان مطلوب گرفت.`;
             summaryMatlubBlock.style.display = 'block';
         } else {
             summaryMatlubBlock.style.display = 'none';
@@ -2208,6 +2292,13 @@ window.onload = function(){
     document.body.style.opacity = 1;
     document.querySelector('.loader').style.display = 'none';
 };
+
+// ثبت سرویس‌ورکر برای نصب و کارکردِ آفلاینِ وب‌اپلیکیشن
+if('serviceWorker' in navigator){
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+}
 </script>
 </body>
 </html>
