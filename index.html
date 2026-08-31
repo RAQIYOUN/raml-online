@@ -620,6 +620,23 @@
         font-weight:bold;
     }
     .matlub-none{ color:#8a97a6; font-size:12px; }
+    .matlub-warn{
+        margin:10px 0 0;
+        font-weight:800;
+        color:#c0392b;
+        font-size:13.5px;
+    }
+    .matlub-houses{
+        margin:10px 0 0;
+        font-weight:700;
+        color:#b9770e;
+        font-size:12.5px;
+        line-height:1.9;
+    }
+    .matlub-emph{
+        font-weight:800;
+        color:#c0392b;
+    }
 
     .bit-num{
         color:var(--brand);
@@ -729,7 +746,7 @@
         </div>
         <div class="summary-block" id="summaryMatlubBlock" style="display:none;">
             <span class="sb-label matlub-label">مطلوبِ نقطه‌ی حکم</span>
-            <span class="sb-text" id="summaryMatlub"></span>
+            <div class="sb-text" id="summaryMatlub"></div>
         </div>
     </div>
 
@@ -1778,6 +1795,30 @@ function computeMatlubFromChain(chain, all16){
     return { house: last.house, row: last.row, element, shapeName, matlub };
 }
 
+// شماره‌ی خانه‌هایی (۱ تا ۱۶) که شکلِ داده‌شده در آن‌ها افتاده — در ظاهر یا باطنِ همین رمل
+function findHousesWithShape(shapeName, all16){
+    const result = [];
+    for(let i = 0; i < 16; i++){
+        if(shapeNameAtHouse(i, all16) === shapeName) result.push(i + 1);
+    }
+    return result;
+}
+
+function formatHouseList(houseNumbers){
+    if(!houseNumbers.length) return 'در هیچ خانه‌ای نیامده';
+    return houseNumbers.map(n => `خانه‌ی ${n} (${houseFamilyName(n - 1)})`).join('، ');
+}
+
+// خروجیِ متنیِ بخش مطلوب: یا هشدارِ «طریق منقلب است»، یا فهرست خانه‌های ظاهر/باطن
+function matlubExtraHtml(matlubShape){
+    if(matlubShape === 'طریق'){
+        return `<p class="matlub-warn">از طریق نمی‌توان مطلوب گرفت، چون طریق شکلی منقلب است.</p>`;
+    }
+    const zahirHouses = findHousesWithShape(matlubShape, currentCast.housesRows);
+    const batinHouses = findHousesWithShape(matlubShape, currentCast.batinRows);
+    return `<p class="matlub-houses">در ظاهر: ${formatHouseList(zahirHouses)}<br>در باطن: ${formatHouseList(batinHouses)}</p>`;
+}
+
 function renderTraceChainHTML(chain){
     return chain.map(step => {
         const dots = step.val === 1 ? '•' : '••';
@@ -1834,7 +1875,8 @@ function renderMatlubSection(hokmRow){
             <span class="matlub-arrival">${houseFamilyName(info.house)} — ${info.element} — ${info.shapeName}</span>
             <span class="matlub-arrow">←</span>
             <span class="matlub-result">${info.matlub}</span>
-        </div>`;
+        </div>
+        ${matlubExtraHtml(info.matlub)}`;
     matlubBoxEl.style.display = 'block';
 }
 
@@ -2093,7 +2135,7 @@ function renderSummary(niyatText){
         const hokmChain15 = tracePoint(14, hokmRow15, currentCast.housesRows);
         const info = computeMatlubFromChain(hokmChain15, currentCast.housesRows);
         if(info && info.matlub){
-            summaryMatlub.textContent = `نقطه‌ی حکم به «${houseFamilyName(info.house)}» (عنصر ${info.element} — شکل ${info.shapeName}) رسید؛ مطلوب آن «${info.matlub}» است.`;
+            summaryMatlub.innerHTML = `نقطه‌ی حکم به «${houseFamilyName(info.house)}» (عنصر ${info.element} — شکل ${info.shapeName}) رسید؛ مطلوب آن <span class="matlub-emph">«${info.matlub}»</span> است.${matlubExtraHtml(info.matlub)}`;
             summaryMatlubBlock.style.display = 'block';
         } else {
             summaryMatlubBlock.style.display = 'none';
