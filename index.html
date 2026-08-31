@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نیت‌رمل | رمل انداختن آنلاین بر اساس دایره ابدح - محمود خاوری</title>
+<title>نیت‌رمل | رمل انداختن آنلاین بر اساس دایره ابجد - محمود خاوری</title>
 
-<meta name="description" content="نیت‌رمل: صفحه‌ی آنلاین انداختن رمل بر اساس نیت شما، با محاسبه‌ی امّهات و بنات و اخوات و شواهد و قاضی، و تفسیر هر خانه دقیقاً بر پایه‌ی دایره‌ی کامل ابدح . تدوین: محمود خاوری - گروه آموزشی راقیون.">
+<meta name="description" content="نیت‌رمل: صفحه‌ی آنلاین انداختن رمل بر اساس نیت شما، با محاسبه‌ی امّهات و بنات و اخوات و شواهد و قاضی، و تفسیر هر خانه دقیقاً بر پایه‌ی دایره‌ی کامل ابجد. تدوین: محمود خاوری - گروه آموزشی راقیون.">
 <meta name="robots" content="index, follow">
 <meta name="author" content="محمود خاوری - گروه آموزشی راقیون">
 
@@ -165,12 +165,16 @@
 
     .status-badge{
         font-size:12px;
-        padding:5px 12px;
-        border-radius:20px;
+        padding:7px 12px;
+        border-radius:12px;
         background:#eafaf1;
         color:#1e8449;
         border:1px solid #c8f0da;
-        white-space:nowrap;
+        white-space:normal;
+        line-height:1.7;
+        max-width:100%;
+        display:inline-block;
+        word-break:break-word;
     }
     .status-badge.pending{ background:#fef5e7; color:#b9770e; border-color:#fbe6bd; }
 
@@ -228,8 +232,33 @@
     .summary-block .sb-text{ font-size:13.5px; line-height:1.8; }
 
     /* ---------- چیدمان سپری (شیلد) ۱۶ خانه ---------- */
-    .shield-wrap{ display:none; }
+    .shield-wrap{ display:none; position:relative; }
     .shield-wrap.show{ display:block; }
+    .shield-trace-svg{
+        position:absolute;
+        top:0; left:0;
+        width:100%; height:100%;
+        pointer-events:none;
+        overflow:visible;
+        z-index:5;
+    }
+    .shield-section-title{
+        max-width:900px;
+        margin:26px auto 12px;
+        text-align:center;
+        font-size:16px;
+        font-weight:bold;
+        color:#556270;
+    }
+    .shield-section-title .zahir-tag{ color:var(--brand); }
+    .shield-section-title .batin-tag{ color:#8e44ad; }
+    .batin-note{
+        max-width:900px;
+        margin:0 auto 14px;
+        text-align:center;
+        font-size:12px;
+        color:#8a97a6;
+    }
 
     .shield{
         direction:rtl;
@@ -323,6 +352,15 @@
         margin-top:16px;
         flex-wrap:wrap;
     }
+    .row-elements-wrap{ position:relative; }
+    .zh-line-svg{
+        position:absolute;
+        top:0; left:0;
+        width:100%; height:100%;
+        pointer-events:none;
+        overflow:visible;
+        z-index:1;
+    }
     .row-el-item{
         background:#f9fbfd;
         border:1px solid #e6eef5;
@@ -330,9 +368,23 @@
         padding:8px 10px;
         text-align:center;
         min-width:70px;
+        position:relative;
+        z-index:2;
+        transition:background .15s, border-color .15s;
     }
+    .row-el-item.zamir-mark{ background:#eaf2f8; border:2px solid #2980b9; }
+    .row-el-item.hokm-mark{ background:#fdf2e9; border:2px solid #e67e22; }
     .row-el-item .re-dot{ font-size:16px; line-height:1; }
+    .row-el-item.zamir-mark .re-dot{ color:#2980b9; }
+    .row-el-item.hokm-mark .re-dot{ color:#e67e22; }
     .row-el-item .re-label{ font-size:10.5px; color:#8a97a6; margin-top:3px; }
+    .row-el-item .re-role{
+        font-size:9px;
+        font-weight:bold;
+        margin-top:2px;
+    }
+    .row-el-item.zamir-mark .re-role{ color:#2980b9; }
+    .row-el-item.hokm-mark .re-role{ color:#e67e22; }
 
     .zamir-hokm{
         display:flex;
@@ -349,8 +401,14 @@
         padding:10px 12px;
         text-align:center;
     }
+    .zh-box.zh-zamir{ background:#eaf2f8; border-color:#aed6f1; }
+    .zh-box.zh-hokm{ background:#fdf2e9; border-color:#f5cba7; }
     .zh-box .zh-label{ font-size:11.5px; font-weight:bold; color:#b9770e; }
+    .zh-box.zh-zamir .zh-label{ color:#2980b9; }
+    .zh-box.zh-hokm .zh-label{ color:#e67e22; }
     .zh-box .zh-dots{ font-size:20px; margin-top:4px; }
+    .zh-box.zh-zamir .zh-dots{ color:#2980b9; }
+    .zh-box.zh-hokm .zh-dots{ color:#e67e22; }
 
     /* ---------- پنجره جزئیات ---------- */
     .modal{
@@ -488,6 +546,13 @@
     .trace-step small{ color:#8a97a6; font-size:10.5px; }
     .trace-arrow{ color:#d0a44c; font-weight:bold; }
 
+    .trace-item.zh-zamir .trace-role{ color:#2980b9; }
+    .trace-item.zh-zamir .trace-step{ border-color:#aed6f1; }
+    .trace-item.zh-zamir .trace-arrow{ color:#2980b9; }
+    .trace-item.zh-hokm .trace-role{ color:#e67e22; }
+    .trace-item.zh-hokm .trace-step{ border-color:#f5cba7; }
+    .trace-item.zh-hokm .trace-arrow{ color:#e67e22; }
+
     .bit-num{
         color:var(--brand);
         background:#eef6fc;
@@ -545,7 +610,7 @@
 
 <header>
     <h1>نیت‌رمل</h1>
-    <p>رمل آنلاین بر پایه‌ی دایره‌ی کامل ابدح</p>
+    <p>رمل آنلاین بر پایه‌ی دایره‌ی کامل ابجد</p>
 </header>
 
 <main>
@@ -591,8 +656,16 @@
         </div>
     </div>
 
+    <p class="shield-section-title"><span class="zahir-tag">🔷 ظاهر رمل</span></p>
     <div class="shield-wrap" id="shieldWrap">
+        <svg class="shield-trace-svg" id="shieldTraceSvg"></svg>
         <div class="shield" id="shield"></div>
+    </div>
+
+    <p class="shield-section-title"><span class="batin-tag">🔮 باطن رمل</span></p>
+    <p class="batin-note">باطن، از ضرب هر خانه‌ی ظاهر با همان خانه از دایره‌ی ابجد (از لحیان تا جماعت) به دست می‌آید.</p>
+    <div class="shield-wrap" id="batinShieldWrap">
+        <div class="shield" id="batinShield"></div>
     </div>
 
     <div class="modal" id="m">
@@ -627,7 +700,10 @@
                 </div>
             </div>
 
-            <div class="row-elements" id="rowElements"></div>
+            <div class="row-elements-wrap" id="rowElementsWrap">
+                <svg class="zh-line-svg" id="zhLineSvg"></svg>
+                <div class="row-elements" id="rowElements"></div>
+            </div>
 
             <div class="trace-box" id="traceBox"></div>
 
@@ -638,12 +714,12 @@
 </main>
 
 <footer>
-    <p style="margin:0;">&copy; 2025 نیت‌رمل — بر پایه‌ی دایره‌ی ابدح، تدوین: <strong>محمود خاوری</strong> (گروه آموزشی راقیون).</p>
+    <p style="margin:0;">&copy; 2025 نیت‌رمل — بر پایه‌ی دایره‌ی ابجد، تدوین: <strong>محمود خاوری</strong> (گروه آموزشی راقیون).</p>
 </footer>
 
 <script>
 /* ======================================================================
-   بخش ۱: دیتای مرجع ۱۶ شکل رملی (عیناً از صفحه‌ی «دایره ابدح» گرفته شده)
+   بخش ۱: دیتای مرجع ۱۶ شکل رملی (عیناً از صفحه‌ی «دایره ابجد» گرفته شده)
    ====================================================================== */
 const houses = [
     { shape:"لحیان", pattern:"•\n••\n••\n••",
@@ -1433,20 +1509,18 @@ function isValidJudge(houseRows){
     return validJudgeShapeNames.includes(judgeShapeName(houseRows));
 }
 
-function castValidRaml(){
-    const MAX_TRY = 5000;
-    for(let attempt = 1; attempt <= MAX_TRY; attempt++){
-        const all16 = performCast();
-        if(isValidJudge(all16[14])){
-            return { houses: all16, attempts: attempt };
-        }
-    }
-    // احتیاط: اگر با MAX_TRY بار هم نشد (عملاً غیرممکن است)، آخرین نتیجه را برمی‌گرداند
-    return { houses: performCast(), attempts: MAX_TRY, forced: true };
+/* ======================================================================
+   باطن رمل: ضربِ هر خانه‌ی ظاهر با همان خانه از دایره‌ی ثابت ابجد
+   (دایره‌ی ابجد یعنی همان ترتیب ثابت ۱۶ شکل، از لحیان تا جماعت)
+   ====================================================================== */
+const abjadCircleRows = houses.map(h => codeOf(h.pattern).split('').map(Number));
+
+function computeBatin(zahirRows){
+    return zahirRows.map((rows, i) => combine(rows, abjadCircleRows[i]));
 }
 
 /* ======================================================================
-   بخش ۴: چیدمان بصری همان دایره‌ی ابدح (شیلد ۸ ستونه)
+   بخش ۴: چیدمان بصری همان دایره‌ی ابجد (شیلد ۸ ستونه)
    ====================================================================== */
 const layout = [
     { row: 1, col: 1 }, { row: 1, col: 2 }, { row: 1, col: 3 }, { row: 1, col: 4 },
@@ -1459,6 +1533,9 @@ const layout = [
 
 const shield = document.getElementById('shield');
 const shieldWrap = document.getElementById('shieldWrap');
+const shieldTraceSvg = document.getElementById('shieldTraceSvg');
+const batinShield = document.getElementById('batinShield');
+const batinShieldWrap = document.getElementById('batinShieldWrap');
 const modal = document.getElementById('m');
 const numBadgeEl = document.getElementById('numBadge');
 const attributionEl = document.getElementById('attribution');
@@ -1468,6 +1545,8 @@ const tEl = document.getElementById('t');
 const attrsEl = document.getElementById('attrs');
 const longTextEl = document.getElementById('longText');
 const rowElementsEl = document.getElementById('rowElements');
+const rowElementsWrapEl = document.getElementById('rowElementsWrap');
+const zhLineSvg = document.getElementById('zhLineSvg');
 const zamirHokmBox = document.getElementById('zamirHokmBox');
 const zamirDotsEl = document.getElementById('zamirDots');
 const hokmDotsEl = document.getElementById('hokmDots');
@@ -1561,7 +1640,7 @@ function getParents(houseIndex){
 function tracePoint(houseIndex, rowIndex, all16){
     const chain = [{ house: houseIndex, row: rowIndex, val: all16[houseIndex][rowIndex] }];
     let curH = houseIndex, curR = rowIndex;
-    while(curH > 3){
+    while(curH > 7){
         const p = getParents(curH);
         if(p.type === 'transpose'){
             const nextH = curR;   // شماره‌ی امّ = شماره‌ی ردیف فعلی
@@ -1585,7 +1664,7 @@ function renderTraceChainHTML(chain){
     }).join('<span class="trace-arrow">←</span>');
 }
 
-function renderTraceSection(houseIndex, rows){
+function renderTraceSection(houseIndex, rows, zamirRow, hokmRow){
     const singleRows = [];
     rows.forEach((v, idx) => { if(v === 1) singleRows.push(idx); });
 
@@ -1595,20 +1674,54 @@ function renderTraceSection(houseIndex, rows){
         return;
     }
 
-    const itemsHtml = singleRows.map((rowIdx, i) => {
+    const itemsHtml = singleRows.map((rowIdx) => {
         const chain = tracePoint(houseIndex, rowIdx, currentCast.housesRows);
         let roleLabel = `نقطه‌ی ${elementByRow[rowIdx]}`;
-        if(houseIndex === 14 && singleRows.length === 2){
-            roleLabel += (i === 0) ? ' (ضمیر)' : ' (حکم)';
-        }
-        return `<div class="trace-item">
+        let colorClass = '';
+        if(rowIdx === zamirRow){ roleLabel += ' (ضمیر)'; colorClass = ' zh-zamir'; }
+        else if(rowIdx === hokmRow){ roleLabel += ' (حکم)'; colorClass = ' zh-hokm'; }
+        return `<div class="trace-item${colorClass}">
             <div class="trace-role">${roleLabel}</div>
             <div class="trace-chain">${renderTraceChainHTML(chain)}</div>
         </div>`;
     }).join('');
 
-    traceBoxEl.innerHTML = `<p class="trace-title">ردیابی نقطه(های) تکی این شکل تا امّهات</p>${itemsHtml}`;
+    traceBoxEl.innerHTML = `<p class="trace-title">ردیابی نقطه(های) تکی این شکل تا امّهات/بنات</p>${itemsHtml}`;
     traceBoxEl.style.display = 'block';
+}
+
+// خط رابطِ رنگی بین نقطه‌ی ضمیر (آبی) و نقطه‌ی حکم (قرمز) در خانه‌ی ۱۵
+function drawZamirHokmLine(zamirRow, hokmRow){
+    zhLineSvg.innerHTML = '';
+    if(zamirRow === -1 || hokmRow === -1) return;
+
+    requestAnimationFrame(() => {
+        const wrapRect = rowElementsWrapEl.getBoundingClientRect();
+        const zamirEl = rowElementsEl.querySelector('.zamir-mark');
+        const hokmEl = rowElementsEl.querySelector('.hokm-mark');
+        if(!zamirEl || !hokmEl || wrapRect.width === 0) return;
+
+        const zr = zamirEl.getBoundingClientRect();
+        const hr = hokmEl.getBoundingClientRect();
+        const x1 = zr.left + zr.width / 2 - wrapRect.left;
+        const y1 = zr.top + zr.height / 2 - wrapRect.top;
+        const x2 = hr.left + hr.width / 2 - wrapRect.left;
+        const y2 = hr.top + hr.height / 2 - wrapRect.top;
+        const midY = Math.min(y1, y2) - 18;
+
+        zhLineSvg.setAttribute('viewBox', `0 0 ${wrapRect.width} ${wrapRect.height}`);
+        zhLineSvg.innerHTML = `
+            <defs>
+                <linearGradient id="zhGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#2980b9"/>
+                    <stop offset="100%" stop-color="#e67e22"/>
+                </linearGradient>
+            </defs>
+            <path d="M ${x1} ${y1} Q ${(x1 + x2) / 2} ${midY} ${x2} ${y2}"
+                  fill="none" stroke="url(#zhGrad)" stroke-width="2.5" stroke-dasharray="5 4"/>
+            <circle cx="${x1}" cy="${y1}" r="4" fill="#2980b9"/>
+            <circle cx="${x2}" cy="${y2}" r="4" fill="#e67e22"/>`;
+    });
 }
 
 function highlightBitNumbers(text){
@@ -1623,13 +1736,19 @@ function shapeForHouse(houseIndex){ // houseIndex: 0..15
     return { shape: patternIndex[code], rows };
 }
 
-function openHouse(houseIndex){
+function shapeForHouseBatin(houseIndex){ // houseIndex: 0..15
+    const rows = currentCast.batinRows[houseIndex];
+    const code = rowsToCode(rows);
+    return { shape: patternIndex[code], rows };
+}
+
+function openHouse(houseIndex, isBatin){
     const n = houseIndex + 1;
-    const { shape, rows } = shapeForHouse(houseIndex);
+    const { shape, rows } = isBatin ? shapeForHouseBatin(houseIndex) : shapeForHouse(houseIndex);
     const topic = houseTopics[houseIndex];
 
-    numBadgeEl.textContent = `خانه شماره ${n}`;
-    attributionEl.textContent = `شکلِ افتاده: ${shape.shape}`;
+    numBadgeEl.textContent = isBatin ? `خانه شماره ${n} (باطن)` : `خانه شماره ${n}`;
+    attributionEl.textContent = isBatin ? `شکلِ باطن: ${shape.shape}` : `شکلِ افتاده: ${shape.shape}`;
     houseTopicLineEl.textContent = `موضوع این خانه: ${topic.title} — ${topic.attribution}`;
 
     sEl.textContent = rowsToPattern(rows);
@@ -1642,26 +1761,42 @@ function openHouse(houseIndex){
     if(shape.boundary){ attrsHtml += `<span>${shape.boundary}</span>`; }
     attrsEl.innerHTML = attrsHtml;
 
-    // عنصر هر ردیف (از بالا: آتش، باد، آب، خاک)
-    rowElementsEl.innerHTML = rows.map((r, idx) => `
-        <div class="row-el-item">
+    // ضمیر/حکم و ردیابیِ نقطه‌های تکی فقط برای خانه‌ی ۱۵ی ظاهر معنا دارد
+    // (باطن از ترکیب جداگانه‌ی هر خانه با دایره‌ی ثابت ابجد ساخته می‌شود و درخت ترکیبیِ
+    // امّهات/بنات ندارد، پس زنجیره‌ی ردیابی برایش تعریف‌شده نیست)
+    const singleRowsForZH = rows.map((v, i) => v === 1 ? i : -1).filter(i => i !== -1);
+    const zamirRow = (!isBatin && n === 15 && singleRowsForZH.length >= 2) ? singleRowsForZH[0] : -1;
+    const hokmRow = (!isBatin && n === 15 && singleRowsForZH.length >= 2) ? singleRowsForZH[singleRowsForZH.length - 1] : -1;
+
+    // عنصر هر ردیف (از بالا: آتش، باد، آب، خاک) — نقاط ضمیر/حکمِ خانه‌ی ۱۵ رنگی مشخص می‌شوند
+    rowElementsEl.innerHTML = rows.map((r, idx) => {
+        let markClass = '';
+        let roleHtml = '';
+        if(idx === zamirRow){ markClass = ' zamir-mark'; roleHtml = '<div class="re-role">ضمیر</div>'; }
+        else if(idx === hokmRow){ markClass = ' hokm-mark'; roleHtml = '<div class="re-role">حکم</div>'; }
+        return `
+        <div class="row-el-item${markClass}" data-row-idx="${idx}">
             <div class="re-dot">${r === 1 ? '•' : '••'}</div>
             <div class="re-label">${elementByRow[idx]}</div>
-        </div>`).join('');
+            ${roleHtml}
+        </div>`;
+    }).join('');
 
-    // ضمیر/حکم فقط برای خانه‌ی ۱۵ (قاضی) و فقط وقتی دقیقاً دو نقطه‌ی تکی دارد
-    const singleRowsForZH = rows.map((v, i) => v === 1 ? i : -1).filter(i => i !== -1);
-    if(n === 15 && singleRowsForZH.length >= 2){
+    if(zamirRow !== -1 && hokmRow !== -1){
         zamirHokmBox.style.display = 'flex';
-        const zamirRow = singleRowsForZH[0];
-        const hokmRow = singleRowsForZH[singleRowsForZH.length - 1];
         zamirDotsEl.textContent = `${elementByRow[zamirRow]} •`;
         hokmDotsEl.textContent = `${elementByRow[hokmRow]} •`;
     } else {
         zamirHokmBox.style.display = 'none';
     }
 
-    renderTraceSection(houseIndex, rows);
+    drawZamirHokmLine(zamirRow, hokmRow);
+    if(isBatin){
+        traceBoxEl.style.display = 'none';
+        traceBoxEl.innerHTML = '';
+    } else {
+        renderTraceSection(houseIndex, rows, zamirRow, hokmRow);
+    }
 
     // فقط پاراگراف مربوط به همین شماره خانه از متن این شکل
     const paras = shape.longText.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
@@ -1684,9 +1819,10 @@ function renderShield(){
         c.style.animationDelay = (i * 0.03) + 's';
         c.dataset.element = shape.element;
         c.dataset.fortune = shape.fortune;
+        c.dataset.houseIndex = i;
         if(i === 14) c.classList.add('judge-house');
         c.innerHTML = `<span class="num">${i + 1}</span><h3>${shape.shape}</h3><pre>${rowsToPattern(rows)}</pre><div class="house-topic">${topic.title}</div>`;
-        c.onclick = () => openHouse(i);
+        c.onclick = () => openHouse(i, false);
 
         if(pos.col !== undefined){
             c.style.gridColumn = String(pos.col);
@@ -1700,6 +1836,89 @@ function renderShield(){
         shield.appendChild(c);
     }
     shieldWrap.classList.add('show');
+    drawShieldTraceLines();
+}
+
+// خط‌های رنگیِ ضمیر (آبی) و حکم (نارنجی) روی کل شیلد ظاهر، از خانه‌ی ۱۵ تا امّ مبدأ
+function drawShieldTraceLines(){
+    shieldTraceSvg.innerHTML = '';
+    if(!currentCast) return;
+    const rows15 = currentCast.housesRows[14];
+    const singles = rows15.map((v, i) => v === 1 ? i : -1).filter(i => i !== -1);
+    if(singles.length < 2) return;
+
+    const zamirRow = singles[0];
+    const hokmRow = singles[singles.length - 1];
+    const zamirChain = tracePoint(14, zamirRow, currentCast.housesRows);
+    const hokmChain = tracePoint(14, hokmRow, currentCast.housesRows);
+
+    requestAnimationFrame(() => {
+        const wrapRect = shieldWrap.getBoundingClientRect();
+        if(wrapRect.width === 0) return;
+        shieldTraceSvg.setAttribute('viewBox', `0 0 ${wrapRect.width} ${wrapRect.height}`);
+
+        function anchorFor(houseIdx, rowIdx){
+            const card = shield.querySelector(`[data-house-index="${houseIdx}"]`);
+            if(!card) return null;
+            const r = card.getBoundingClientRect();
+            const yFrac = 0.34 + (rowIdx / 3) * 0.4; // موقعیت تقریبی همان ردیفِ نقطه داخل کارت
+            return {
+                x: r.left - wrapRect.left + r.width / 2,
+                y: r.top - wrapRect.top + r.height * yFrac
+            };
+        }
+
+        function pathFor(chain){
+            const pts = chain.map(step => anchorFor(step.house, step.row)).filter(Boolean);
+            if(pts.length < 2) return { d: '', pts };
+            return { d: 'M ' + pts.map(p => `${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' L '), pts };
+        }
+
+        const zamir = pathFor(zamirChain);
+        const hokm = pathFor(hokmChain);
+
+        let svgHtml = '';
+        if(zamir.d) svgHtml += `<path d="${zamir.d}" fill="none" stroke="#2980b9" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
+        if(hokm.d) svgHtml += `<path d="${hokm.d}" fill="none" stroke="#e67e22" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>`;
+
+        [{ pts: zamir.pts, color: '#2980b9' }, { pts: hokm.pts, color: '#e67e22' }].forEach(({ pts, color }) => {
+            pts.forEach(p => {
+                svgHtml += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3.5" fill="${color}"/>`;
+            });
+        });
+
+        shieldTraceSvg.innerHTML = svgHtml;
+    });
+}
+
+window.addEventListener('resize', () => { if(currentCast) drawShieldTraceLines(); });
+
+function renderBatinShield(){
+    batinShield.innerHTML = '';
+    for(let i = 0; i < 16; i++){
+        const { shape, rows } = shapeForHouseBatin(i);
+        const topic = houseTopics[i];
+        const pos = layout[i];
+        const c = document.createElement('div');
+        c.className = 'card';
+        c.style.animationDelay = (i * 0.03) + 's';
+        c.dataset.element = shape.element;
+        c.dataset.fortune = shape.fortune;
+        c.innerHTML = `<span class="num">${i + 1}</span><h3>${shape.shape}</h3><pre>${rowsToPattern(rows)}</pre><div class="house-topic">${topic.title}</div>`;
+        c.onclick = () => openHouse(i, true);
+
+        if(pos.col !== undefined){
+            c.style.gridColumn = String(pos.col);
+        } else {
+            const span = pos.colEnd - pos.colStart;
+            c.classList.add('narrow');
+            c.style.gridColumn = `${pos.colStart} / ${pos.colEnd}`;
+            c.style.width = (100 / span).toFixed(4) + '%';
+        }
+        c.style.gridRow = String(pos.row);
+        batinShield.appendChild(c);
+    }
+    batinShieldWrap.classList.add('show');
 }
 
 function renderSummary(niyatText){
@@ -1720,25 +1939,27 @@ castBtn.addEventListener('click', () => {
     statusBadge.style.display = 'none';
     summaryPanel.classList.remove('show');
     shieldWrap.classList.remove('show');
+    batinShieldWrap.classList.remove('show');
 
     // کمی تاخیر مصنوعی برای حس «انداختن رمل» - سپس محاسبه واقعی
     setTimeout(() => {
-        const result = castValidRaml();
-        currentCast = { housesRows: result.houses, niyat: niyatInput.value.trim() };
+        const all16 = performCast();
+        currentCast = { housesRows: all16, batinRows: computeBatin(all16), niyat: niyatInput.value.trim() };
 
         castingAnim.classList.remove('show');
         castBtn.disabled = false;
 
         statusBadge.style.display = 'inline-block';
-        if(result.forced){
-            statusBadge.textContent = 'هشدار: شرط خانه ۱۵ برقرار نشد، رمل را دوباره بیندازید';
-            statusBadge.className = 'status-badge pending';
-        } else {
-            statusBadge.textContent = `رمل معتبر ✅ (شرط خانه ۱۵ در تلاش ${result.attempts} برقرار شد)`;
+        if(isValidJudge(all16[14])){
+            statusBadge.textContent = 'رمل معتبر ✅ (شکل خانه‌ی ۱۵ صحیح است)';
             statusBadge.className = 'status-badge';
+        } else {
+            statusBadge.textContent = `رمل باطل ⚠️ — شکل خانه‌ی ۱۵ «${judgeShapeName(all16[14])}» است و باید یکی از هفت شکل معتبر (نصرة‌الخارج، قبض‌الخارج، اجتماع، عقله، قبض‌الداخل، نصرة‌الداخل، طریق) باشد. اگر خواستید، دوباره رمل بیندازید.`;
+            statusBadge.className = 'status-badge pending';
         }
 
         renderShield();
+        renderBatinShield();
         renderSummary(currentCast.niyat);
         summaryPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 900);
@@ -1747,7 +1968,7 @@ castBtn.addEventListener('click', () => {
 manualCastBtn.addEventListener('click', () => {
     const mothers = motherSelectIds.map(id => rowsFromShapeName(document.getElementById(id).value));
     const all16 = buildAll16FromMothers(mothers);
-    currentCast = { housesRows: all16, niyat: niyatInputManual.value.trim() };
+    currentCast = { housesRows: all16, batinRows: computeBatin(all16), niyat: niyatInputManual.value.trim() };
 
     statusBadgeManual.style.display = 'inline-block';
     if(isValidJudge(all16[14])){
@@ -1760,7 +1981,9 @@ manualCastBtn.addEventListener('click', () => {
 
     summaryPanel.classList.remove('show');
     shieldWrap.classList.remove('show');
+    batinShieldWrap.classList.remove('show');
     renderShield();
+    renderBatinShield();
     renderSummary(currentCast.niyat);
     summaryPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
