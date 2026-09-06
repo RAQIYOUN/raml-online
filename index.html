@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -565,6 +566,64 @@
         white-space:nowrap;
     }
 
+    /* ---------- توصیف ظاهری شخص (طالب) ---------- */
+    .appearance-box{
+        margin-top:10px;
+        background:#fdf6ec;
+        border:1px solid #f5e2bb;
+        border-radius:10px;
+        padding:10px 12px;
+    }
+    .appearance-box .appearance-label{
+        margin:0 0 4px;
+        font-size:12.5px;
+        font-weight:bold;
+        color:#b9770e;
+    }
+    .appearance-box .appearance-text{
+        font-size:13px;
+        color:#5b4a2f;
+        line-height:1.8;
+    }
+
+    /* ---------- بخش منسوبات تفصیلی (جداول پنج‌گانه) ---------- */
+    .detail-groups{ margin-top:16px; }
+    .detail-group{ margin-bottom:12px; }
+    .detail-group h4{
+        margin:0 0 8px;
+        font-size:12.5px;
+        font-weight:bold;
+        color:#2c7bb0;
+        border-right:3px solid var(--brand);
+        padding-right:8px;
+    }
+    .detail-grid{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:6px;
+    }
+    .detail-item{
+        background:#f9fbfd;
+        border:1px solid #e6eef5;
+        border-radius:8px;
+        padding:6px 8px;
+    }
+    .detail-item .d-label{
+        display:block;
+        font-size:10.5px;
+        color:#8a97a6;
+        margin-bottom:2px;
+    }
+    .detail-item .d-value{
+        display:block;
+        font-size:12.5px;
+        color:#333;
+        font-weight:bold;
+    }
+    @media (max-width:600px){
+        .detail-grid{ grid-template-columns:1fr; }
+    }
+
     .trace-box{
         display:none;
         margin-top:16px;
@@ -813,7 +872,16 @@
             <div class="attrs-box">
                 <p class="attrs-label">این شکل که در این خانه افتاده</p>
                 <div class="attrs" id="attrs"></div>
+
+                <!-- مشخصات ظاهری شخص (طالب) -->
+                <div class="appearance-box" id="appearanceBox">
+                    <p class="appearance-label">مشخصات ظاهری شخص</p>
+                    <p class="appearance-text" id="appearanceText"></p>
+                </div>
             </div>
+
+            <!-- منسوبات تفصیلی (پنج جدول: طبع و حروف / اماکن و احوال / جسم و رنگ و مزاج / خوراک و جانوران / فلک و ابزار) -->
+            <div class="detail-groups" id="detailGroups"></div>
 
             <div class="zamir-hokm" id="zamirHokmBox" style="display:none;">
                 <div class="zh-box">
@@ -1548,11 +1616,48 @@ const appearances = [
 houses.forEach((h, i) => Object.assign(h, extras[i]));
 houses.forEach((h, i) => { h.appearance = appearances[i]; });
 
-/* موضوع ثابت هر خانه (بیت) از ۱ تا ۱۶ - مستقل از اینکه چه شکلی در آن بیفتد.
-   این را از همان دیتای مرجع می‌گیریم (title و attribution هر اندیس، موضوع
-   همان شماره خانه است، چون در صفحه‌ی مرجع هر شکل در همان خانه‌ی هم‌شماره‌اش
-   چیده شده بود). */
 const houseTopics = houses.map((h, i) => ({ n: i + 1, title: h.title, attribution: h.attribution }));
+
+/* گروه‌بندی منسوبات تفصیلی برای نمایش در پنجره جزئیات (عیناً از صفحه‌ی دایره‌ی ابدح) */
+const detailGroupDefs = [
+    { title:"طبع، حروف و اصناف", fields:[
+        ["نر یا ماده","gender"], ["حروف","letters"], ["باز یا بسته","openClosed"],
+        ["جوان یا پیر","age"], ["اصناف","guild"], ["قوی (طبیعت)","nature"]
+    ]},
+    { title:"مکان، رخداد و زمان", fields:[
+        ["مکان / موضع","place"], ["حادثه","event"], ["زمان (ازمنه)","time"], ["جسم","substance"], ["جواهر","gem"]
+    ]},
+    { title:"قیمت، شکل، رنگ و مزاج", fields:[
+        ["قیمت","price"], ["شکل هندسی","geoShape"], ["جهت","direction"], ["رنگ","color"],
+        ["مزاج","temperament"], ["سبک یا سنگین","weight"], ["بو","scent"]
+    ]},
+    { title:"خوراک، طعم و جانوران", fields:[
+        ["میوه","fruit"], ["علت بیماری","illness"], ["طعم","taste"], ["حیوان","animal"],
+        ["فصل","season"], ["پرنده","bird"]
+    ]},
+    { title:"فلک و ابزار", fields:[
+        ["کوکب","planet"], ["برج","zodiac"], ["روز","day"], ["شب یا روز","dayNight"], ["آلت/ابزار","tool"]
+    ]}
+];
+
+function renderDetailGroups(h){
+    detailGroupsEl.innerHTML = detailGroupDefs.map(group => {
+        const items = group.fields
+            .filter(([label, key]) => h[key])
+            .map(([label, key]) => `
+                <div class="detail-item">
+                    <span class="d-label">${label}</span>
+                    <span class="d-value">${h[key]}</span>
+                </div>`)
+            .join('');
+        if(!items) return '';
+        return `
+            <div class="detail-group">
+                <h4>${group.title}</h4>
+                <div class="detail-grid">${items}</div>
+            </div>`;
+    }).join('');
+}
 
 /* ======================================================================
    بخش ۲: نگاشت الگو (فرد/زوج هر ردیف) به شکل رملی
@@ -1671,6 +1776,8 @@ const houseTopicLineEl = document.getElementById('houseTopicLine');
 const sEl = document.getElementById('s');
 const tEl = document.getElementById('t');
 const attrsEl = document.getElementById('attrs');
+const appearanceTextEl = document.getElementById('appearanceText');
+const detailGroupsEl = document.getElementById('detailGroups');
 const longTextEl = document.getElementById('longText');
 const rowElementsEl = document.getElementById('rowElements');
 const rowElementsWrapEl = document.getElementById('rowElementsWrap');
@@ -1807,8 +1914,6 @@ function shapeNameAtHouse(houseIdx, all16){
 }
 
 // مطلوبِ یک شکل در توالیِ عنصر داده‌شده (شکلِ بعدی در آن توالی)
-// اگر خودِ نقطه‌ی حکم به «طریق» برسد، چون طریق شکلی منقلب است و آخرِ توالی است،
-// از آن مطلوبی گرفته نمی‌شود (به شکلِ اول توالی هم برنمی‌گردد)
 function getMatlub(element, shapeName){
     const cycle = matlubCycles[element];
     if(!cycle) return null;
@@ -1818,8 +1923,6 @@ function getMatlub(element, shapeName){
     return cycle[(idx + 1) % cycle.length];
 }
 
-// بر پایه‌ی آخرین گامِ زنجیره‌ی ردیابیِ نقطه‌ی حکم (خانه‌ای که نهایتاً به آن می‌رسد)
-// عنصرِ آن گام و شکلِ همان خانه را می‌گیرد و مطلوب را برمی‌گرداند
 function computeMatlubFromChain(chain, all16){
     if(!chain || !chain.length) return null;
     const last = chain[chain.length - 1];
@@ -1830,7 +1933,6 @@ function computeMatlubFromChain(chain, all16){
     return { house: last.house, row: last.row, element, shapeName, matlub };
 }
 
-// شماره‌ی خانه‌هایی (۱ تا ۱۶) که شکلِ داده‌شده در آن‌ها افتاده — در ظاهر یا باطنِ همین رمل
 function findHousesWithShape(shapeName, all16){
     const result = [];
     for(let i = 0; i < 16; i++){
@@ -1844,7 +1946,6 @@ function formatHouseList(houseNumbers){
     return houseNumbers.map(n => `خانه‌ی ${n} (${houseFamilyName(n - 1)})`).join('، ');
 }
 
-// خروجیِ متنیِ بخش مطلوب: یا هشدارِ «وقتی مطلوب طریق باشد حکم منقلب است»، یا فهرست خانه‌های ظاهر/باطن
 function matlubExtraHtml(matlubShape){
     if(matlubShape === 'طریق'){
         return `<p class="matlub-warn">وقتی مطلوبِ حکم طریق باشد، حکم منقلب است.</p>`;
@@ -1887,7 +1988,6 @@ function renderTraceSection(houseIndex, rows, zamirRow, hokmRow){
     traceBoxEl.style.display = 'block';
 }
 
-// «مطلوب»: فقط برای خانه‌ی ۱۵ی ظاهر، وقتی نقطه‌ی حکم مشخص است معنا دارد
 function renderMatlubSection(hokmRow){
     if(hokmRow === -1){
         matlubBoxEl.style.display = 'none';
@@ -1919,7 +2019,6 @@ function renderMatlubSection(hokmRow){
     matlubBoxEl.style.display = 'block';
 }
 
-// خط رابطِ رنگی بین نقطه‌ی ضمیر (آبی) و نقطه‌ی حکم (قرمز) در خانه‌ی ۱۵
 function drawZamirHokmLine(zamirRow, hokmRow){
     zhLineSvg.innerHTML = '';
     if(zamirRow === -1 || hokmRow === -1) return;
@@ -1990,17 +2089,15 @@ function openHouse(houseIndex, isBatin){
     if(shape.boundary){ attrsHtml += `<span>${shape.boundary}</span>`; }
     attrsEl.innerHTML = attrsHtml;
 
+    // مشخصات ظاهری شخص و منسوبات تفصیلی پنج‌گانه (برای شکلی که در این خانه افتاده)
+    appearanceTextEl.textContent = shape.appearance || '(ثبت نشده)';
+    renderDetailGroups(shape);
+
     // ضمیر/حکم و ردیابیِ نقطه‌های تکی فقط برای خانه‌ی ۱۵ی ظاهر معنا دارد
-    // (باطن از ترکیب جداگانه‌ی هر خانه با دایره‌ی ثابت ابدح ساخته می‌شود و درخت ترکیبیِ
-    // امّهات/بنات ندارد، پس زنجیره‌ی ردیابی برایش تعریف‌شده نیست)
     const singleRowsForZH = rows.map((v, i) => v === 1 ? i : -1).filter(i => i !== -1);
     const zamirRow = (!isBatin && n === 15 && singleRowsForZH.length >= 2) ? singleRowsForZH[0] : -1;
-    // حکم، نقطه‌ی تکِ بعدی بلافاصله پس از ضمیر است (نه لزوماً آخرین نقطه‌ی تک شکل)
-    // در شش شکلِ معتبرِ دیگر فقط دو نقطه‌ی تک وجود دارد پس تفاوتی نمی‌کند،
-    // اما در «طریق» که هر چهار عنصر تک هستند همین تفاوت است: ضمیر=آتش، حکم=باد
     const hokmRow = (!isBatin && n === 15 && singleRowsForZH.length >= 2) ? singleRowsForZH[1] : -1;
 
-    // عنصر هر ردیف (از بالا: آتش، باد، آب، خاک) — نقاط ضمیر/حکمِ خانه‌ی ۱۵ رنگی مشخص می‌شوند
     rowElementsEl.innerHTML = rows.map((r, idx) => {
         let markClass = '';
         let roleHtml = '';
@@ -2074,10 +2171,6 @@ function renderShield(){
     drawShieldTraceLines();
 }
 
-// خط‌های رنگیِ ضمیر (آبی) و حکم (نارنجی) روی کل شیلد ظاهر، از خانه‌ی ۱۵ تا امّ مبدأ
-// این خط‌ها دیگر از روی متنِ خانه‌ها رد نمی‌شوند: از کنارِ هر خانه بیرون می‌آیند،
-// از فاصله‌ی خالیِ میان ردیف‌ها (گَپ بین خانه‌ها) عبور می‌کنند و از کنارِ خانه‌ی بعدی
-// وارد می‌شوند؛ یک نقطه‌ی رنگی کنارِ هر خانه دقیقاً ارتفاعِ همان ردیف را نشان می‌دهد.
 function drawShieldTraceLines(){
     shieldTraceSvg.innerHTML = '';
     if(!currentCast) return;
@@ -2086,7 +2179,6 @@ function drawShieldTraceLines(){
     if(singles.length < 2) return;
 
     const zamirRow = singles[0];
-    // مشابهِ منطقِ openHouse: حکم، نقطه‌ی تکِ بلافاصله بعد از ضمیر است، نه آخرین نقطه‌ی تک
     const hokmRow = singles[1];
     const zamirChain = tracePoint(14, zamirRow, currentCast.housesRows);
     const hokmChain = tracePoint(14, hokmRow, currentCast.housesRows);
@@ -2100,7 +2192,7 @@ function drawShieldTraceLines(){
             const card = shield.querySelector(`[data-house-index="${houseIdx}"]`);
             if(!card) return null;
             const r = card.getBoundingClientRect();
-            const yFrac = 0.34 + (rowIdx / 3) * 0.4; // ارتفاعِ تقریبیِ همان ردیفِ نقطه داخل کارت
+            const yFrac = 0.34 + (rowIdx / 3) * 0.4;
             return {
                 top: r.top - wrapRect.top,
                 bottom: r.bottom - wrapRect.top,
@@ -2112,8 +2204,6 @@ function drawShieldTraceLines(){
             };
         }
 
-        // مسیرِ یک «جهش» بین دو خانه: از کنارِ خانه‌ی مبدأ (نه از روی متنِ آن) بیرون می‌رود،
-        // از فاصله‌ی خالیِ بینِ ردیف‌ها می‌گذرد و از کنارِ خانه‌ی مقصد وارد می‌شود
         function hopPoints(a, b){
             if(!a || !b) return [];
             const goingUp = b.row < a.row;
@@ -2239,7 +2329,6 @@ castBtn.addEventListener('click', () => {
     shieldWrap.classList.remove('show');
     batinShieldWrap.classList.remove('show');
 
-    // کمی تاخیر مصنوعی برای حس «انداختن رمل» - سپس محاسبه واقعی
     setTimeout(() => {
         const all16 = performCast();
         currentCast = { housesRows: all16, batinRows: computeBatin(all16), niyat: niyatInput.value.trim() };
@@ -2293,7 +2382,6 @@ window.onload = function(){
     document.querySelector('.loader').style.display = 'none';
 };
 
-// ثبت سرویس‌ورکر برای نصب و کارکردِ آفلاینِ وب‌اپلیکیشن
 if('serviceWorker' in navigator){
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js').catch(() => {});
