@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -60,9 +59,29 @@
     header h1{ margin:0; font-size:16px; }
     header p{ margin:2px 0 0; font-size:11.5px; opacity:.9; }
 
+    .main-nav{
+        margin-top:8px;
+        display:flex;
+        justify-content:center;
+        flex-wrap:wrap;
+        gap:8px;
+    }
+    .main-nav a{
+        color:#fff;
+        text-decoration:none;
+        font-size:12px;
+        font-weight:bold;
+        background:rgba(255,255,255,.15);
+        border:1px solid rgba(255,255,255,.4);
+        border-radius:20px;
+        padding:5px 14px;
+        transition:background .15s;
+    }
+    .main-nav a:hover{ background:rgba(255,255,255,.3); }
+
     main{
         flex:1;
-        padding:96px 12px 30px;
+        padding:128px 12px 30px;
         max-width:900px;
         margin:0 auto;
         width:100%;
@@ -756,7 +775,7 @@
 
     @media (max-width:600px){
         :root{ --col-gap:4px; --row-gap:8px; }
-        main{ padding:88px 8px 24px; }
+        main{ padding:150px 8px 24px; }
         .card{ padding:5px 2px; border-radius:7px; }
         .card h3{ font-size:9.5px; margin-bottom:2px; }
         .card pre{ font-size:10px; }
@@ -779,6 +798,31 @@
         animation:spin2 1s linear infinite;
     }
     @keyframes spin2{ 0%{ transform:rotate(0deg); } 100%{ transform:rotate(360deg); } }
+
+    /* ---------- جلوگیری از کپی/انتخاب متن و دیدن راحت سورس ---------- */
+    html, body, header, main, footer, .card, .box, .long-text, .attrs span, .shield, .summary-panel{
+        -webkit-user-select:none;
+        -moz-user-select:none;
+        -ms-user-select:none;
+        user-select:none;
+        -webkit-touch-callout:none;
+    }
+    /* اجازه‌ی تایپ و انتخاب فقط در کادرهای ورودی نیت */
+    textarea, input, select{
+        -webkit-user-select:text;
+        -moz-user-select:text;
+        -ms-user-select:text;
+        user-select:text;
+    }
+    img, svg{
+        -webkit-user-drag:none;
+        user-drag:none;
+        pointer-events:none;
+    }
+    .card svg, .shield-trace-svg, .zh-line-svg{ pointer-events:none; }
+    @media print{
+        body{ display:none !important; }
+    }
 </style>
 </head>
 <body>
@@ -787,6 +831,9 @@
 <header>
     <h1>نیت‌رمل</h1>
     <p>رمل آنلاین بر پایه‌ی دایره‌ی کامل ابدح</p>
+    <nav class="main-nav">
+        <a href="https://raqiyoun.github.io/ABDAH/" target="_blank" rel="noopener">دایره ابدح و منسوبات ان</a>
+    </nav>
 </header>
 
 <main>
@@ -1571,7 +1618,7 @@ const extras = [
 
     { boundary:"منقلب", gender:"ماده", letters:"م، ا", openClosed:"بسته", age:"جوان", guild:"عسکران", nature:"غضبی",
       place:"محل خواب", event:"خوف و هراس", time:"حال", substance:"نباتی", gem:"حدید",
-      price:"متوسط‌القیمت", geoShape:"دائره", direction:"شمالی", color:"کبود", temperament:"سرد و مرطوب", weight:"سنگین", scent:"فسق (؟)",
+      price:"متوسط‌القیمت", geoShape:"دائره", direction:"شمالی", color:"کبود", temperام:"سرد و مرطوب", weight:"سنگین", scent:"فسق (؟)",
       fruit:"کشمش", illness:"خون و سودا", taste:"تلخ و تند", animal:"الاغ", season:"پاییز", bird:"پرستو و کبک (؟)",
       planet:"مریخ", zodiac:"عقرب", day:"سه‌شنبه", dayNight:"روز", tool:"— (متن تصویر ناخوانا)" },
 
@@ -2381,6 +2428,40 @@ window.onload = function(){
     document.body.style.opacity = 1;
     document.querySelector('.loader').style.display = 'none';
 };
+
+/* ======================================================================
+   بخش ۵: جلوگیری ساده از کپی/راست‌کلیک و دیدن سریع سورس
+   (توجه: این‌ها فقط بازدارنده‌ی کاربر عادی‌اند و امنیت واقعی ایجاد نمی‌کنند،
+   چون هر کدی که به مرورگر ارسال شود بالاخره از راه شبکه قابل مشاهده است)
+   ====================================================================== */
+document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+
+document.addEventListener('dragstart', function(e){ e.preventDefault(); });
+
+document.addEventListener('selectstart', function(e){
+    const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+    if(tag === 'textarea' || tag === 'input') return; // اجازه در کادرهای نیت
+    e.preventDefault();
+});
+
+document.addEventListener('copy', function(e){
+    const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+    if(tag === 'textarea' || tag === 'input') return;
+    e.preventDefault();
+});
+
+document.addEventListener('keydown', function(e){
+    const k = e.key ? e.key.toLowerCase() : '';
+    // View Source
+    if(e.ctrlKey && k === 'u'){ e.preventDefault(); return false; }
+    // Save Page
+    if(e.ctrlKey && k === 's'){ e.preventDefault(); return false; }
+    // Print
+    if(e.ctrlKey && k === 'p'){ e.preventDefault(); return false; }
+    // DevTools
+    if(e.key === 'F12'){ e.preventDefault(); return false; }
+    if(e.ctrlKey && e.shiftKey && (k === 'i' || k === 'j' || k === 'c')){ e.preventDefault(); return false; }
+});
 
 if('serviceWorker' in navigator){
     window.addEventListener('load', () => {
