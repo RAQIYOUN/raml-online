@@ -213,6 +213,109 @@
         .mothers-grid{ grid-template-columns:1fr; }
     }
 
+    /* ---------- حالت نقطه‌به‌نقطه (رمل زدن با کلیک) ---------- */
+    .click-progress{
+        display:flex;
+        flex-direction:column;
+        gap:8px;
+        margin:14px 0;
+    }
+    .click-mother-row{
+        display:flex;
+        align-items:center;
+        gap:6px;
+        flex-wrap:wrap;
+    }
+    .click-mother-row .cm-label{
+        font-size:11.5px;
+        font-weight:bold;
+        color:#8a97a6;
+        min-width:38px;
+    }
+    .click-line-badge{
+        flex:1;
+        min-width:56px;
+        text-align:center;
+        border-radius:8px;
+        border:1px solid #e3e3e8;
+        background:#f9fbfd;
+        padding:6px 4px;
+        font-size:11px;
+        color:#aab2bd;
+        transition:background .15s, border-color .15s, color .15s;
+    }
+    .click-line-badge .clb-el{ display:block; font-size:9.5px; margin-bottom:2px; }
+    .click-line-badge .clb-dots{ font-size:13px; }
+    .click-line-badge.active{
+        border-color:var(--brand);
+        background:#eaf2f8;
+        color:var(--brand-dark);
+        box-shadow:0 0 0 2px #3498db33;
+    }
+    .click-line-badge.done{
+        border-color:#c8f0da;
+        background:#eafaf1;
+        color:#1e8449;
+        font-weight:bold;
+    }
+
+    .click-pad-wrap{ margin-top:10px; }
+    .click-pad-label{
+        font-size:13px;
+        font-weight:bold;
+        color:var(--brand-dark);
+        margin-bottom:8px;
+        text-align:center;
+    }
+    .click-pad{
+        background:linear-gradient(160deg,#eef6fc,#fdf6ec);
+        border:2px dashed #aed6f1;
+        border-radius:14px;
+        min-height:120px;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        cursor:pointer;
+        user-select:none;
+        padding:16px 10px;
+        transition:background .1s;
+    }
+    .click-pad:active{ background:linear-gradient(160deg,#dcecfa,#fbeed6); }
+    .click-dots{
+        display:flex;
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:5px;
+        max-width:280px;
+        margin-bottom:8px;
+        min-height:20px;
+    }
+    .click-dots span{
+        width:9px; height:9px;
+        border-radius:50%;
+        background:var(--brand);
+        display:inline-block;
+        animation:cardIn .25s ease both;
+    }
+    .click-hint{
+        font-size:11px;
+        color:#8a97a6;
+        text-align:center;
+    }
+    .click-pad-actions{
+        display:flex;
+        gap:8px;
+        margin-top:12px;
+        flex-wrap:wrap;
+        align-items:center;
+    }
+    .click-pad-actions .mode-btn{
+        flex:0 0 auto;
+        min-width:auto;
+        padding:10px 16px;
+    }
+
     .cast-row{
         display:flex;
         gap:10px;
@@ -897,6 +1000,7 @@
         <div class="mode-row">
             <button type="button" class="mode-btn active" id="modeRandomBtn">🎲 رمل می‌خواهم بزنم</button>
             <button type="button" class="mode-btn" id="modeManualBtn">✍️ رمل زده‌ام</button>
+            <button type="button" class="mode-btn" id="modeClickBtn">👆 نقطه به نقطه می‌زنم</button>
         </div>
 
         <div id="randomModeBox">
@@ -917,6 +1021,28 @@
             <div class="cast-row">
                 <button class="cast-btn" id="manualCastBtn">✅ ثبت و محاسبه</button>
                 <span class="status-badge" id="statusBadgeManual" style="display:none;"></span>
+            </div>
+        </div>
+
+        <div id="clickModeBox" style="display:none;">
+            <label for="niyatInputClick">نیت خود را بنویسید (اختیاری):</label>
+            <textarea id="niyatInputClick" placeholder="مثلاً: آیا این سفر برایم خوب است؟"></textarea>
+
+            <label style="margin-top:12px;">۱۶ خط امّهات را یکی‌یکی بسازید: روی کادر زیر هرچقدر خواستید سریع و بدون شمردن ضربه بزنید، سپس «پایان این خط» را بزنید تا نقطه‌ها دوتا دوتا حذف شوند؛ اگر یک نقطه باقی بماند همان سطر «نقطه» و اگر هیچ نقطه‌ای باقی نماند «خط» در نظر گرفته می‌شود.</label>
+
+            <div class="click-progress" id="clickProgress"></div>
+
+            <div class="click-pad-wrap">
+                <div class="click-pad-label" id="clickPadLabel"></div>
+                <div class="click-pad" id="clickPad">
+                    <div class="click-dots" id="clickDots"></div>
+                    <div class="click-hint">روی این کادر ضربه بزنید</div>
+                </div>
+                <div class="click-pad-actions">
+                    <button class="cast-btn" id="finishLineBtn">✅ پایان این خط</button>
+                    <button class="mode-btn" id="resetClickBtn">↺ شروع دوباره</button>
+                    <span class="status-badge" id="statusBadgeClick" style="display:none;"></span>
+                </div>
             </div>
         </div>
     </div>
@@ -1667,7 +1793,7 @@ const extras = [
 
     { boundary:"منقلب", gender:"ماده", letters:"م، ا", openClosed:"بسته", age:"جوان", guild:"عسکران", nature:"غضبی",
       place:"محل خواب", event:"خوف و هراس", time:"حال", substance:"نباتی", gem:"حدید",
-      price:"متوسط‌القیمت", geoShape:"دائره", direction:"شمالی", color:"کبود", temperام:"سرد و مرطوب", weight:"سنگین", scent:"فسق (؟)",
+      price:"متوسط‌القیمت", geoShape:"دائره", direction:"شمالی", color:"کبود", temperament:"سرد و مرطوب", weight:"سنگین", scent:"فسق (؟)",
       fruit:"کشمش", illness:"خون و سودا", taste:"تلخ و تند", animal:"الاغ", season:"پاییز", bird:"پرستو و کبک (؟)",
       planet:"مریخ", zodiac:"عقرب", day:"سه‌شنبه", dayNight:"روز", tool:"— (متن تصویر ناخوانا)" },
 
@@ -1904,24 +2030,135 @@ const manualCastBtn = document.getElementById('manualCastBtn');
 const statusBadgeManual = document.getElementById('statusBadgeManual');
 const niyatInputManual = document.getElementById('niyatInputManual');
 
+const modeClickBtn = document.getElementById('modeClickBtn');
+const clickModeBox = document.getElementById('clickModeBox');
+const clickProgressEl = document.getElementById('clickProgress');
+const clickPadEl = document.getElementById('clickPad');
+const clickDotsEl = document.getElementById('clickDots');
+const clickPadLabelEl = document.getElementById('clickPadLabel');
+const finishLineBtn = document.getElementById('finishLineBtn');
+const resetClickBtn = document.getElementById('resetClickBtn');
+const statusBadgeClick = document.getElementById('statusBadgeClick');
+const niyatInputClick = document.getElementById('niyatInputClick');
+
 let currentCast = null; // { housesRows: [...16 arrays], niyat }
 
-/* ---------- تنظیم حالت (رمل می‌خواهم بزنم / رمل زده‌ام) ---------- */
+/* ---------- تنظیم حالت (رمل می‌خواهم بزنم / رمل زده‌ام / نقطه به نقطه) ---------- */
 function setMode(mode){
-    if(mode === 'manual'){
-        modeManualBtn.classList.add('active');
-        modeRandomBtn.classList.remove('active');
-        manualModeBox.style.display = 'block';
-        randomModeBox.style.display = 'none';
-    } else {
-        modeRandomBtn.classList.add('active');
-        modeManualBtn.classList.remove('active');
-        randomModeBox.style.display = 'block';
-        manualModeBox.style.display = 'none';
-    }
+    modeRandomBtn.classList.toggle('active', mode === 'random');
+    modeManualBtn.classList.toggle('active', mode === 'manual');
+    modeClickBtn.classList.toggle('active', mode === 'click');
+    randomModeBox.style.display = mode === 'random' ? 'block' : 'none';
+    manualModeBox.style.display = mode === 'manual' ? 'block' : 'none';
+    clickModeBox.style.display = mode === 'click' ? 'block' : 'none';
 }
 modeRandomBtn.addEventListener('click', () => setMode('random'));
 modeManualBtn.addEventListener('click', () => setMode('manual'));
+modeClickBtn.addEventListener('click', () => setMode('click'));
+
+/* ---------- حالت نقطه‌به‌نقطه: ساخت ۱۶ خط با کلیک و جفت‌کردنِ نقطه‌ها ----------
+   هر امّ از ۴ خط تشکیل می‌شود (به ترتیب عناصر آتش، باد، آب، خاک، دقیقاً هم‌ترتیب
+   با ردیف‌های چیده‌شده در houses[i].pattern)؛ ۴ امّ × ۴ خط = ۱۶ خط. برای هر خط،
+   کاربر هرچند بار خواست روی کادر ضربه می‌زند (بدون شمردن)، سپس با «پایان این خط»
+   نقطه‌ها دوتادوتا حذف می‌شوند: اگر یکی باقی بماند = نقطه (فرد)، اگر هیچ‌کدام
+   باقی نماند = خط (زوج). پس از تکمیل ۱۶ خط، امّهات به‌دست‌آمده وارد همان
+   الگوریتم buildAll16FromMothers می‌شوند تا بقیه‌ی اشکال (بنات، اخوات، شواهد،
+   قاضی، قاضی‌الفصل) و باطن رمل از روی آن‌ها ساخته شود. */
+let clickMothers, clickM, clickR, clickTaps;
+
+function resetClickCast(){
+    clickMothers = [[null,null,null,null],[null,null,null,null],[null,null,null,null],[null,null,null,null]];
+    clickM = 0; clickR = 0; clickTaps = 0;
+    statusBadgeClick.style.display = 'none';
+    clickPadEl.style.pointerEvents = 'auto';
+    clickPadEl.style.opacity = 1;
+    renderClickProgress();
+    renderClickPad();
+}
+
+function renderClickProgress(){
+    let html = '';
+    for(let m = 0; m < 4; m++){
+        html += `<div class="click-mother-row"><span class="cm-label">امّ ${m + 1}</span>`;
+        for(let r = 0; r < 4; r++){
+            const val = clickMothers[m][r];
+            const isDone = val !== null;
+            const isActive = (!isDone && m === clickM && r === clickR);
+            let cls = 'click-line-badge';
+            if(isDone) cls += ' done';
+            else if(isActive) cls += ' active';
+            const dotsTxt = isDone ? (val === 1 ? '•' : '••') : '—';
+            html += `<div class="${cls}"><span class="clb-el">${elementByRow[r]}</span><span class="clb-dots">${dotsTxt}</span></div>`;
+        }
+        html += `</div>`;
+    }
+    clickProgressEl.innerHTML = html;
+}
+
+function renderClickPad(){
+    clickTaps = 0;
+    clickDotsEl.innerHTML = '';
+    if(clickM < 4){
+        clickPadLabelEl.textContent = `امّ ${clickM + 1} — خط عنصر ${elementByRow[clickR]} (خط ${clickM * 4 + clickR + 1} از ۱۶)`;
+    }
+}
+
+clickPadEl.addEventListener('click', () => {
+    if(clickM >= 4) return;
+    clickTaps++;
+    const dot = document.createElement('span');
+    clickDotsEl.appendChild(dot);
+});
+
+function finalizeCurrentLine(){
+    if(clickM >= 4) return;
+    if(clickTaps === 0){
+        alert('لطفاً حداقل یک‌بار روی کادر ضربه بزنید تا نقطه‌ای انداخته شود.');
+        return;
+    }
+    // جفت‌کردن نقطه‌ها دوتا دوتا: اگر یکی باقی بماند = نقطه (۱) ، اگر هیچ‌چیز باقی نماند = خط (۲)
+    const reduced = (clickTaps % 2 === 1) ? 1 : 2;
+    clickMothers[clickM][clickR] = reduced;
+
+    clickR++;
+    if(clickR >= 4){ clickR = 0; clickM++; }
+
+    if(clickM >= 4){
+        finishClickCast();
+    } else {
+        renderClickProgress();
+        renderClickPad();
+    }
+}
+finishLineBtn.addEventListener('click', finalizeCurrentLine);
+resetClickBtn.addEventListener('click', resetClickCast);
+
+function finishClickCast(){
+    const all16 = buildAll16FromMothers(clickMothers);
+    currentCast = { housesRows: all16, batinRows: computeBatin(all16), niyat: niyatInputClick.value.trim() };
+
+    clickPadLabelEl.textContent = 'همه‌ی ۱۶ خط ثبت شد ✅';
+    clickPadEl.style.pointerEvents = 'none';
+    clickPadEl.style.opacity = .5;
+    renderClickProgress();
+
+    statusBadgeClick.style.display = 'inline-block';
+    if(isValidJudge(all16[14])){
+        statusBadgeClick.textContent = 'رمل معتبر ✅ (شکل خانه‌ی ۱۵ صحیح است)';
+        statusBadgeClick.className = 'status-badge';
+    } else {
+        statusBadgeClick.textContent = `رمل باطل ⚠️ — شکل خانه‌ی ۱۵ «${judgeShapeName(all16[14])}» است و باید یکی از هفت شکل معتبر (نصرة‌الخارج، قبض‌الخارج، اجتماع، عقله، قبض‌الداخل، نصرة‌الداخل، طریق) باشد. برای رمل جدید «شروع دوباره» را بزنید.`;
+        statusBadgeClick.className = 'status-badge pending';
+    }
+
+    summaryPanel.classList.remove('show');
+    shieldWrap.classList.remove('show');
+    batinShieldWrap.classList.remove('show');
+    renderShield();
+    renderBatinShield();
+    renderSummary(currentCast.niyat);
+    summaryPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
 
 /* ---------- ساخت کشویی انتخاب شکل برای هر یک از چهار امّ ---------- */
 const shapeByName = {};
@@ -1943,6 +2180,7 @@ function setupMothersGrid(){
         </div>`).join('');
 }
 setupMothersGrid();
+resetClickCast();
 
 /* ======================================================================
    ردیابی نقطه‌های تکیِ هر شکل تا رسیدن به بنات/امّهات
